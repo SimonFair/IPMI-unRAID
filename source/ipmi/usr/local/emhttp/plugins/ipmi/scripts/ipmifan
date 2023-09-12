@@ -205,7 +205,7 @@ function autofan() {
             $board0 = ($i == 0) ? $board : $board.$i;
             $raw    = $board_json[$board0]['raw'];
             $auto   = $board_json[$board0]['auto'];
-            $cmd   .= "ipmi-raw $raw $auto $fanopts 2>&1 >/dev/null &; ";
+            $cmd   .= "ipmi-raw $raw $auto $fanopts 2>&1 >/dev/null";
         }
     }else{
         //if board is Supermicro
@@ -331,7 +331,10 @@ if($board == 'Supermicro'){
     fullfan();
 }
 
-while(TRUE){ while(TRUE){
+$board_model = rtrim(ltrim(shell_exec("dmidecode -qt2|awk -F: '/^\tProduct Name:/ {print $2}'")));
+fanlog("Board Model: $board_model");
+
+while (TRUE) { while (TRUE) {
 ####  DO YOUR STUFF HERE  ####
 
     /* Refresh hdds and hdd temp if hdd poll time is expired */
@@ -407,19 +410,21 @@ while(TRUE){ while(TRUE){
            }
 
             if($board !== 'Supermicro'){
-                //add value to hex for Asrock boards
-                if($cmd_count !== 0 && $fan_count == 0){
-                    // set value for CPU fans for dual sockets
-                    if($pwm == '00'){
-                        $hex .= ' 00 00';
-                    }else{
-                        $hex .= " 01 $pwm";
-                    }
-
-                }else{
+                if ($board_model == "EP2C612 WS") {
                     $hex .= " $pwm";
+                } else {
+                    //add value to hex for Asrock boards
+                    if ($cmd_count !== 0 && $fan_count == 0) {
+                        // set value for CPU fans for dual sockets
+                        if($pwm == '00'){
+                            $hex .= ' 00 00';
+                        }else{
+                            $hex .= " 01 $pwm";
+                        }
+                    }else{
+                        $hex .= " $pwm";
+                    }
                 }
-
             }else{
                 //create command for Supermicro
                 $cmd_str = "ipmi-raw $raw $value $pwm $fanopts 2>&1; ";
@@ -445,7 +450,10 @@ while(TRUE){ while(TRUE){
         }
         if($board !== 'Supermicro'){
             //compare last value to new value for Asrock boards
-            $cmd_str = "ipmi-raw $raw$hex $fanopts 2>&1";
+            if($board_model == "EP2C612 WS"){
+                $hex = ltrim($hex);
+            }
+            $cmd_str = "ipmi-raw $raw $hex $fanopts 2>&1";
 
             if($i == 0){
 
