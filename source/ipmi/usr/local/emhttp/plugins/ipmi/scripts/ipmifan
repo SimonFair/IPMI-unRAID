@@ -47,12 +47,12 @@ $longopts = [
 ];
 $args = getopt($shortopts, $longopts);
 
-if (array_key_exists('help', $args)) {
+if(array_key_exists('help', $args)){
     echo $usage.PHP_EOL;
     exit(0);
 }
 
-if (array_key_exists('version', $args)) {
+if(array_key_exists('version', $args)){
     echo 'IPMI Fan Control: 1.0'.PHP_EOL;
     exit(0);
 }
@@ -107,7 +107,7 @@ if($argf){
         exit(0);
 }
 
-if (!$board_file_status) {
+if(!$board_file_status){
     $msg = "Your $board motherboard is not supported or setup yet";
     logger($msg, $argq);
     exit(1);
@@ -170,14 +170,14 @@ if($daemon){
 ##############################
 
 /* logger*/
-function logger($msg, $quiet = false) {
+function logger($msg, $quiet = false){
     syslog(LOG_INFO, $msg);
-    if (!$quiet)
+    if(!$quiet)
         echo PHP_EOL.$msg.PHP_EOL;
 }
 
 /* logfile */
-function fanlog($msg) {
+function fanlog($msg){
     global $log;
     $msg = date('Y-m-d H:i:s').' '.$msg.PHP_EOL;
     file_put_contents($log,$msg,FILE_APPEND);
@@ -194,7 +194,7 @@ function debug($m){
 }
 
 /* auto fan */
-function autofan() {
+function autofan(){
     global $board_json, $board, $cmd_count, $fanopts;
     fanlog('Setting fans to auto');
 
@@ -218,7 +218,7 @@ function autofan() {
 }
 
 /* full speed fan */
-function fullfan() {
+function fullfan(){
     global $board_json, $board, $cmd_count, $fanopts;
     fanlog('Setting fans to full speed');
 
@@ -252,13 +252,13 @@ function get_highest_temp(){
     //get all hard drives
     $disksini = parse_ini_file('/var/local/emhttp/disks.ini',true);
     $devsini = parse_ini_file('/var/local/emhttp/devs.ini',true);
-    if ($devsini) $hdds = array_merge($disksini, $devsini); else $hdds = $disksini ;
+    if($devsini) $hdds = array_merge($disksini, $devsini); else $hdds = $disksini ;
     unset($hdds['flash']);
 
     $highest_temp = 0;
-    foreach ($hdds as $hdd) {
+    foreach ($hdds as $hdd){
 
-        if (!array_key_exists($hdd['id'], $ignore)) {
+        if(!array_key_exists($hdd['id'], $ignore)){
             $temp = 0;
             if(array_key_exists('temp', $hdd))
                 $temp = $hdd['temp'];
@@ -276,7 +276,7 @@ function get_highest_temp(){
 }
 
 /* get fan and temp sensors */
-function ipmi_fan_sensors() {
+function ipmi_fan_sensors(){
     global $ipmi, $fanopts, $hdd_temp;
 
     // return empty array if no ipmi detected or network options
@@ -305,7 +305,7 @@ function ipmi_fan_sensors() {
         $size_raw = sizeof($sensor_raw);
         $sensor = ($size_raw < 6) ? []: array_combine($keys, array_slice($sensor_raw,0,6,true));
 
-        if ($sensor['Type'] === 'Temperature' || $sensor['Type'] === 'Fan')
+        if($sensor['Type'] === 'Temperature' || $sensor['Type'] === 'Fan')
             $sensors[$sensor['ID']] = $sensor;
     }
     return $sensors; // sensor readings
@@ -334,17 +334,17 @@ if($board == 'Supermicro'){
 $board_model = rtrim(ltrim(shell_exec("dmidecode -qt2|awk -F: '/^\tProduct Name:/ {print $2}'")));
 fanlog("Board Model: $board_model");
 
-while (TRUE) { while (TRUE) {
+while (TRUE){ while (TRUE){
 ####  DO YOUR STUFF HERE  ####
 
     /* Refresh hdds and hdd temp if hdd poll time is expired */
-    if ($hdd_count <= 0) {
+    if($hdd_count <= 0){
         $hdd_count = $hddpoll * 10;
         $hdd_temp  = get_highest_temp();
         $sensors['99']['Reading'] = $hdd_temp;
     }
     /* Get sensor info if fan sensor poll time is expired */
-    if ($fan_count <= 0) {
+    if($fan_count <= 0){
         $fan_count = $fanpoll * 10;
         $sensors = ipmi_fan_sensors();
     }
@@ -363,7 +363,7 @@ while (TRUE) { while (TRUE) {
 
             $temp = isset($fancfg["TEMP_$fan"]) ? $fancfg["TEMP_$fan"] : '';
 
-            if(!empty($temp)) {
+            if(!empty($temp)){
                 $templo  = (isset($fancfg["TEMPLO_$fan"])) ? intval($fancfg["TEMPLO_$fan"])  : 30;
                 $temphi  = (isset($fancfg["TEMPHI_$fan"])) ? intval($fancfg["TEMPHI_$fan"])  : 45;
                 $fanmin  = (isset($fancfg["FANMIN_$fan"])) ? intval($fancfg["FANMIN_$fan"])  : 16;
@@ -371,10 +371,10 @@ while (TRUE) { while (TRUE) {
                 $reading = floatval($sensors[$temp]['Reading']);
                 $name    = htmlspecialchars($sensors[$temp]['Name']);
 
-                if ($reading <= $templo){
+                if($reading <= $templo){
                     $pct = 0;
                     $pwm = 1;
-                }elseif ($reading >= $temphi){
+                }elseif($reading >= $temphi){
                     $pct = 1;
                     $pwm = $range;
                 }else{
@@ -382,13 +382,13 @@ while (TRUE) { while (TRUE) {
                     $pwm = round(($pct)*($range/4))*4; //round
                 }
                 //impose fan lower limit
-                if ($pwm <= $fanmin){
+                if($pwm <= $fanmin){
                     $pwm  = $fanmin;
                     $pct  = $fanmin/$range;
                 }
 
                 //impose fan upper limit
-                if ($pwm >= $fanmax){
+                if($pwm >= $fanmax){
                     $pwm  = $fanmax;
                     $pct  = $fanmax/$range;
                 }
@@ -410,11 +410,11 @@ while (TRUE) { while (TRUE) {
            }
 
             if($board !== 'Supermicro'){
-                if ($board_model == "EP2C612 WS") {
+                if($board_model == "EP2C612 WS"){
                     $hex .= " $pwm";
                 } else {
                     //add value to hex for Asrock boards
-                    if ($cmd_count !== 0 && $fan_count == 0) {
+                    if($cmd_count !== 0 && $fan_count == 0){
                         // set value for CPU fans for dual sockets
                         if($pwm == '00'){
                             $hex .= ' 00 00';
@@ -489,17 +489,17 @@ while (TRUE) { while (TRUE) {
     /* print variable */
     $defined_vars = get_defined_vars();
 
-    foreach (array('_GET','_POST','_COOKIE','_FILES','argv','argc','_SERVER') as $i)
+    foreach(array('_GET', '_POST', '_COOKIE', '_FILES', 'argv', 'argc', '_SERVER') as $i)
         unset($defined_vars[$i]);
 
     if($debug)
-        debug("\nDECLARED VARIABLES:\n".print_r($defined_vars, true));
+        debug("\nDECLARED VARIABLES:\n" . print_r($defined_vars, true));
 
     unset($defined_vars);
 
     $time1 = time();
 
-    for ($i=0; $i < $ipmipoll ; $i++) {
+    for($i = 0; $i < $ipmipoll; $i++){
         sleep(10);
         $fan_count = $fan_count - 10;
         $hdd_count = $hdd_count - 10;
@@ -514,7 +514,7 @@ while (TRUE) { while (TRUE) {
             break;
         }
     }
-    debug("Sleep ".(time()-$time1)." seconds.");
+    debug("Sleep " . (time() - $time1) . " seconds.");
 
 ######  END OF SECTION  ######
     };
