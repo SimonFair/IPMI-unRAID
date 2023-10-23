@@ -43,6 +43,18 @@ if($board === 'ASRock' || $board === 'ASRockRack'){
                   ]
             ]
         ];
+        }elseif($board_model == '12'){
+         $range = 64;
+         $board_json = [ 'Supermicro' =>
+                 [ 'raw'   => '00 30 70 66 01',
+                   'auto'  => '00 30 45 01',
+                   'full'  => '00 30 45 01 01',
+                   'fans'  => [
+                     'FAN1234' => '00',
+                     'FANAB' => '01'
+                   ]
+             ]
+         ];
     }else{
         $board_json = [ 'Supermicro' =>
                 [ 'raw'   => '00 30 70 66 01',
