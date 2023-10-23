@@ -95,6 +95,7 @@ Enable Virtual Machine Override:
   <?=mk_option($omodel, '9', 'X9');?>
   <?=mk_option($omodel, '10', 'X10');?>
   <?=mk_option($omodel, '11', 'X11');?>
+  <?=mk_option($omodel, '12', 'X12');?>
   </select>
 
 > Select Supermicro model series
