@@ -198,7 +198,7 @@ function autofan() {
     global $board_json, $board, $cmd_count, $fanopts;
     fanlog('Setting fans to auto');
 
-    if($board !== 'Supermicro'){
+    if($board == 'ASRock'){
         //if board is ASRock
         $cmd = '';
         for($i = 0; $i <= $cmd_count; $i++){
@@ -207,13 +207,21 @@ function autofan() {
             $auto   = $board_json[$board0]['auto'];
             $cmd   .= "ipmi-raw $raw $auto $fanopts 2>&1 >/dev/null &; ";
         }
-    }else{
+    }elseif($board == 'Supermicro'){
         //if board is Supermicro
         $raw    = $board_json[$board]['raw'];
         $auto = $board_json[$board]['auto'];
         $mode = trim(shell_exec("ipmi-raw 00 30 45 00 | awk -F '45 00 ' '{print $2}'"));
         $cmd  = "ipmi-raw $auto $mode $fanopts 2>&1 >/dev/null &";
-    }
+    }else($board == 'Dell'){
+        //if board is Dell
+        $cmd = '';
+        for($i = 0; $i <= $cmd_count; $i++){
+            $board0 = ($i == 0) ? $board : $board.$i;
+            $raw    = $board_json[$board0]['raw'];
+            $auto   = $board_json[$board0]['auto'];
+            $cmd   .= "ipmi-raw $raw $auto $fanopts 2>&1 >/dev/null &; ";
+        }
     shell_exec($cmd);
 }
 
@@ -222,7 +230,7 @@ function fullfan() {
     global $board_json, $board, $cmd_count, $fanopts;
     fanlog('Setting fans to full speed');
 
-    if($board !== 'Supermicro'){
+     if($board == 'ASRock'){
         //if board is ASRock
         $cmd = '';
         for($i = 0; $i <= $cmd_count; $i++){
@@ -231,11 +239,19 @@ function fullfan() {
             $full   = $board_json[$board0]['full'];
             $cmd   .= "ipmi-raw $raw $full $fanopts 2>&1 >/dev/null &; ";
         }
-    }else{
+    }elseif($board == 'Supermicro'){
         //if board is Supermicro
         $full = $board_json[$board]['full'];
         $cmd  = "ipmi-raw $full $fanopts 2>&1 >/dev/null &";
-    }
+      }
+    }}else($board == 'Dell'){
+    // if board is Dell
+        $cmd = '';
+        for($i = 0; $i <= $cmd_count; $i++){
+            $board0 = ($i == 0) ? $board : $board.$i;
+            $raw    = $board_json[$board0]['raw'];
+            $full   = $board_json[$board0]['full'];
+            $cmd   .= "ipmi-raw $raw $full $fanopts 2>&1 >/dev/null &; ";
     shell_exec($cmd);
     sleep(10);
 }
