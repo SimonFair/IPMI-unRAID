@@ -5,7 +5,7 @@ Markdown="false"
 ---
 <div>
     <span id="arch-switch" class="status"><input type="checkbox" id="event-arch"></span>
-    <table class="tablesorter hover-highlight events" id="tblEvent">
+    <table class="tablesorter shift hover-highlight events" id="tblEvent">
         <thead>
             <tr>
                 <th class="sorter-false filter-false"> Status </th>

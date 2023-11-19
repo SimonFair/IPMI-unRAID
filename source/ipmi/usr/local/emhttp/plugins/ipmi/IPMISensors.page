@@ -19,7 +19,7 @@ table.tablesorter tbody tr:nth-child(even) {
 
 <div>
     <span id="adv-switch" class="status"><input type='checkbox' id='advancedview'></span>
-    <table class="tablesorter hover-highlight sensors" id="tblSensor">
+    <table class="tablesorter shift hover-highlight sensors" id="tblSensor">
         <thead>
             <tr>
                 <th class="sorter-false filter-false"> Status </th>
