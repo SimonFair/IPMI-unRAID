@@ -297,6 +297,7 @@ function fullfan() {
             break;  
     }
     echo shell_exec($cmd);
+    sleep(10);
 }
 
 /* get highest temp of hard drives */
