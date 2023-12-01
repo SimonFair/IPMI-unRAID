@@ -15,7 +15,11 @@ $range      = 64;
 $fanip   = (isset($fancfg['FANIP']) && ($netsvc === 'enable')) ? htmlspecialchars($fancfg['FANIP']) : htmlspecialchars($ipaddr) ;
 
 /* board info */
-if($board === 'ASRock' || $board === 'ASRockRack'){
+#if($board === 'ASRock' || $board === 'ASRockRack'){
+switch($board) {
+    case 'ASRock':
+    case 'ASRockRack':
+
     //if board is ASRock
     //check number of physical CPUs
     if( $override == 'disable')
@@ -26,12 +30,15 @@ if($board === 'ASRock' || $board === 'ASRockRack'){
     $board_file = "$plg_path/board.json";
     $board_file_status = (file_exists($board_file));
     $board_json = ($board_file_status) ? json_decode((file_get_contents($board_file)), true) : [];
-}elseif($board === 'Supermicro'){
+    break;
+    case  'Supermicro': 
     //if board is Supermicro
     $cmd_count = 0;
     $board_model = ( $override == 'disable') ? intval(shell_exec("dmidecode -qt2|awk -F: '/^\tProduct Name:/{p=\$2} END{print substr(p,3,1)}'")) : $omodel;
     $board_file_status = true;
-    if($board_model == '9'){
+    #if($board_model == '9'){
+      switch($board_model){
+        case '9':
         $range = 255;
         $board_json = [ 'Supermicro' =>
                 [ 'raw'   => '00 30 91 5A 3',
@@ -43,7 +50,22 @@ if($board === 'ASRock' || $board === 'ASRockRack'){
                   ]
             ]
         ];
-    }else{
+        break;
+      case '12':
+        $range = 64;
+        $board_json = [ 'Supermicro' =>
+                [ 'raw'   => '00 30 70 66 01',
+                  'auto'  => '00 30 45 01',
+                  'full'  => '00 30 45 01 01',
+                  'fans'  => [
+                    'FAN1234' => '00',
+                    'FANAB' => '01'
+                  ]
+            ]
+        ];
+        break;
+   # }else{
+      default:
         $board_json = [ 'Supermicro' =>
                 [ 'raw'   => '00 30 70 66 01',
                   'auto'  => '00 30 45 01',
@@ -54,8 +76,11 @@ if($board === 'ASRock' || $board === 'ASRockRack'){
                   ]
             ]
         ];
+        break;
     }
-}elseif($board === 'Dell'){
+  
+    break;
+  case 'Dell':
   $board_file_status = true;
     $board_json = [ 'Dell' =>
             [ 'raw'    => '00 30 30 02 FF',
@@ -67,6 +92,7 @@ if($board === 'ASRock' || $board === 'ASRockRack'){
               ]
         ]
     ];
+    break;
  /*   $board_json = [ 'Dell' =>
     [ 'raw'    => '00 30 30 02 FF', # + value 01-64 for %
       'auto'   => '00 30 30 01 01',

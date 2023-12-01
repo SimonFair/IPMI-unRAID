@@ -227,7 +227,7 @@ function autofan() {
             break;
         case "Dell":
             //if board is Dell
-            $raw    = $board_json[$board]['raw'];
+            $raw = $board_json[$board]['raw'];
             $auto = $board_json[$board]['auto'];
             $cmd   = "ipmi-raw $auto $fanopts 2>&1 >/dev/null &";
             break;
@@ -473,17 +473,24 @@ while(TRUE){ while(TRUE){
            switch($board) {
             case "ASRock":
             case "ASRockRack":
-                //add value to hex for Asrock boards
-                if($cmd_count !== 0 && $fan_count == 0){
-                    // set value for CPU fans for dual sockets
-                    if($pwm == '00'){
-                        $hex .= ' 00 00';
-                    }else{
-                        $hex .= " 01 $pwm";
-                    }
+                switch($board_model) {
+                    case 'EP2C612 WS':
+                        $hex .= " $pwm";
+                        break;
+                    default:
+                        //add value to hex for Asrock boards
+                        if($cmd_count !== 0 && $fan_count == 0){
+                            // set value for CPU fans for dual sockets
+                            if($pwm == '00'){
+                                $hex .= ' 00 00';
+                            }else{
+                                $hex .= " 01 $pwm";
+                            }
 
-                }else{
-                    $hex .= " $pwm";
+                        }else{
+                            $hex .= " $pwm";
+                        }
+                        break;
                 }
                 break;
             case "Supermicro":
@@ -526,6 +533,9 @@ while(TRUE){ while(TRUE){
             case "ASRock":
             case "ASRockRack":
             //compare last value to new value for Asrock boards
+            if($board_model == "EP2C612 WS"){
+                $hex = ltrim($hex);
+            }
             $cmd_str = "ipmi-raw $raw$hex $fanopts 2>&1; ";
 
             if($i == 0){
