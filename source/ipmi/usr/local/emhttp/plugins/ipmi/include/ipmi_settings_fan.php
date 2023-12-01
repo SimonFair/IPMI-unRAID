@@ -67,7 +67,7 @@ if($board === 'ASRock' || $board === 'ASRockRack'){
               ]
         ]
     ];
-    $board_json = [ 'Dell' =>
+ /*   $board_json = [ 'Dell' =>
     [ 'raw'    => '00 30 30 02 FF', # + value 01-64 for %
       'auto'   => '00 30 30 01 01',
       'manual' => '00 30 30 01 00',
@@ -88,7 +88,7 @@ if($board === 'ASRock' || $board === 'ASRockRack'){
         'Fan1234' => '00',
       ]
     ]
-];
+]; */
 }
 
 // fan network options base64_decode(
