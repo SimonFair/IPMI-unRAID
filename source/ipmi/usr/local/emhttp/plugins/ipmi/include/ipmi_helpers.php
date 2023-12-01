@@ -301,7 +301,7 @@ function get_fanctrl_options(){
         $sysfan = 0;
         $cpufan = 0;
         foreach($fansensors as $id => $fan){
-            if($i > 7) break;
+            if($i > 11) break;
             if ($fan['Type'] === 'Fan'){
                 $name    = htmlspecialchars($fan['Name']);
                 $display = $name;
@@ -339,8 +339,8 @@ function get_fanctrl_options(){
                     }
                 }
                 if($board ==='Dell'){
-                    $name = 'FAN1234';
-                    $display = 'FAN1234';
+                  #  $name = 'FAN1234';
+                  #  $display = 'FAN1234';
                 }
                 $tempid  = 'TEMP_'.$name;
                 $temp    = $fansensors[$fancfg[$tempid]];

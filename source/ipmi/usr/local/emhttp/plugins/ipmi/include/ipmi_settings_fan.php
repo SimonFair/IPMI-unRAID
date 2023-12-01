@@ -56,6 +56,7 @@ if($board === 'ASRock' || $board === 'ASRockRack'){
         ];
     }
 }elseif($board === 'Dell'){
+  $board_file_status = true;
     $board_json = [ 'Dell' =>
             [ 'raw'    => '00 30 30 02 FF',
               'auto'   => '00 30 30 01 01',
@@ -66,6 +67,28 @@ if($board === 'ASRock' || $board === 'ASRockRack'){
               ]
         ]
     ];
+    $board_json = [ 'Dell' =>
+    [ 'raw'    => '00 30 30 02 FF', # + value 01-64 for %
+      'auto'   => '00 30 30 01 01',
+      'manual' => '00 30 30 01 00',
+      'full'   => '00 30 30 02 FF 64',
+      'fans'   => [
+        'Fan1A' => '00',
+        'Fan1B' => '00',
+        'Fan2A' => '01',
+        'Fan2B' => '01',
+        'Fan3A' => '02',
+        'Fan3B' => '02',
+        'Fan4A' => '03',
+        'Fan4B' => '03',
+        'Fan5A' => '04',
+        'Fan5B' => '04',
+        'Fan6A' => '05',
+        'Fan6B' => '05',
+        'Fan1234' => '00',
+      ]
+    ]
+];
 }
 
 // fan network options base64_decode(
