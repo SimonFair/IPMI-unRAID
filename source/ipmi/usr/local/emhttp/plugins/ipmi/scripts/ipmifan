@@ -417,12 +417,12 @@ while(TRUE){ while(TRUE){
         $cmd    = '';
         $exec   = false;
         $fan_count  = 0;
-        var_dump($fans,$raw) ;
+       # var_dump($fans,$raw) ;
 
         foreach($fans as $fan => $value){
 
             $temp = isset($fancfg["TEMP_$fan"]) ? $fancfg["TEMP_$fan"] : '';
-            echo "temp:".$temp;
+         #   echo "temp:".$temp;
             if(!empty($temp)) {
                 $templo  = (isset($fancfg["TEMPLO_$fan"])) ? intval($fancfg["TEMPLO_$fan"])  : 30;
                 $temphi  = (isset($fancfg["TEMPHI_$fan"])) ? intval($fancfg["TEMPHI_$fan"])  : 45;
@@ -488,7 +488,8 @@ while(TRUE){ while(TRUE){
             case "Supermicro":
                 //create command for Supermicro
                 $cmd_str = "ipmi-raw $raw $value $pwm $fanopts 2>&1; ";
-
+              #  echo "r$raw v$value p$pwm\n" ;
+              #  echo "$cmd_str\n" ;
                 //check if new pwm for FAN1234 then add to cmd string
                 if(($value == '00' || $value == '10') && $current_pwm !== $pwm && $pwm !== '00'){
                     $cmd .= $cmd_str;
@@ -505,12 +506,13 @@ while(TRUE){ while(TRUE){
                     $current_pwm2 = $pwm;
                     $exec = true;
                 }
+                break;
             case "Dell":
-                echo $pwm;
-                $pwm = "05" ;
+               # echo $pwm;
+               # $pwm = "05" ;
                 #fanlog($msg);
                 if(($value == '00' || $value == '10') && $current_pwm !== $pwm && $pwm !== '00'){
-                    $cmd = "ipmi-raw $raw $pwm $fanopts 2>&1";
+                    $cmd = "ipmi-raw $raw $pwm $fanopts 2>&1; ";
                     $current_pwm  = $pwm;
                     
                     $exec = true;
@@ -523,7 +525,7 @@ while(TRUE){ while(TRUE){
             case "ASRock":
             case "ASRockRack":
             //compare last value to new value for Asrock boards
-            $cmd_str = "ipmi-raw $raw$hex $fanopts 2>&1";
+            $cmd_str = "ipmi-raw $raw$hex $fanopts 2>&1; ";
 
             if($i == 0){
 
@@ -550,7 +552,7 @@ while(TRUE){ while(TRUE){
         // execute command if exec set
         if($exec){
             shell_exec($cmd);
-            fanlog($cmd);
+            #fanlog($cmd);
             if($debug)
                 fanlog($cmd);
 
