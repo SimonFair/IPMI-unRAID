@@ -3,7 +3,7 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ipmi">
 <!ENTITY author    "SimonFair">
-<!ENTITY version   "2023.10.06">
+<!ENTITY version   "2023.12.02">
 <!ENTITY launch    "Settings/IPMI">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/&author;/IPMI-unRAID/master">
 <!ENTITY pluginURL "&gitURL;/plugin/&name;.plg">
@@ -17,6 +17,12 @@
 
 <CHANGES>
 ##&name;
+###2023.12.02
+- Add FAN Control support for Dell systems.
+- Add Supermicro X12 options. Thanks to C4Wiz for PR.
+- Add ASRock EP2C612WS Support thanks to WillGunn for PR.
+- Set shift class in table sorter thanks to kcpants for PR.
+- Refactor code to allow easier models+boards to be added.
 ###2023.10.06
 - Add IPMI LAN Version option. Default 1.5
 ###2023.06.26

@@ -74,10 +74,12 @@ Enable Virtual Machine Override:
 <label class="ipmi-override">Motherboard:</label>
 : <select id="OBOARD" class="ipmi-run ipmi-lan ipmi-override" name="OBOARD" size="1"  title="Select motherboard">
   <?=mk_option($oboard, 'ASRock', 'ASRock');?>
+  <?=mk_option($oboard, 'ASRockRack', 'ASRockRack');?>
   <?=mk_option($oboard, 'Supermicro', 'Supermicro');?>
+  <?=mk_option($oboard, 'Dell', 'Dell');?>
   </select>
 
-> Select either ASRock or Supermicro
+> Select either ASRock, ASRockRack, Supermicro or Dell
 > Selecting an incorrect motherboard will not work.
 > Settings and commands are specific to each manufacture
 
@@ -95,6 +97,8 @@ Enable Virtual Machine Override:
   <?=mk_option($omodel, '9', 'X9');?>
   <?=mk_option($omodel, '10', 'X10');?>
   <?=mk_option($omodel, '11', 'X11');?>
+  <?=mk_option($omodel, '12', 'X12');?>
+  <?=mk_option($omodel, ' ', 'Any');?>
   </select>
 
 > Select Supermicro model series

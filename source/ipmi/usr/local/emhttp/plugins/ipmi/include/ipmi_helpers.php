@@ -301,7 +301,7 @@ function get_fanctrl_options(){
         $sysfan = 0;
         $cpufan = 0;
         foreach($fansensors as $id => $fan){
-            if($i > 7) break;
+            if($i > 11) break;
             if ($fan['Type'] === 'Fan'){
                 $name    = htmlspecialchars($fan['Name']);
                 $display = $name;
@@ -328,7 +328,7 @@ function get_fanctrl_options(){
                             continue;
                         }
                     }elseif($name !== 'FANA' && !$syscpu) {
-                        $i++;
+                        #$i++;
                         if($fan1234 == 0){
                             $name = 'FAN1234';
                             $display = 'FAN1234';
@@ -339,8 +339,13 @@ function get_fanctrl_options(){
                     }
                 }
                 if($board ==='Dell'){
-                    $name = 'FAN1234';
-                    $display = 'FAN1234';
+                    $i++;
+                    if($fan1234 == 0){
+                    $name = 'FAN123456';
+                    $display = 'FAN123456';
+                    $fan1234++;}                        
+                    else{
+                        continue;}
                 }
                 $tempid  = 'TEMP_'.$name;
                 $temp    = $fansensors[$fancfg[$tempid]];

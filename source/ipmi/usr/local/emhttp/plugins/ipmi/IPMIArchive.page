@@ -4,7 +4,7 @@ Tag="save"
 Markdown="false"
 ---
 <div>
-    <table class="tablesorter hover-highlight archive" id="tblArchive">
+    <table class="tablesorter shift hover-highlight archive" id="tblArchive">
         <thead>
             <tr>
                 <th class="sorter-false filter-false"> Status </th>

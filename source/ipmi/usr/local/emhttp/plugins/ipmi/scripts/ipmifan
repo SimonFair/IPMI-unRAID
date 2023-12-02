@@ -165,6 +165,15 @@ if($daemon){
 # 00 to FF - Set Speed (0-255)
 #############################################
 
+#############################################
+# Dell
+# raw'    => '30 30 02 FF', # + value 01-64 for % FF is all or ID
+#'auto'   => '30 30 01 00',
+#'manual' => '30 30 01 01',
+#'full'   => '30 30 02 FF 64',
+# 01 - 64  = 1% - 100%
+#############################################
+
 ##############################
 ###### FUNCTION SECTION ######
 ##############################
@@ -197,46 +206,98 @@ function debug($m){
 function autofan() {
     global $board_json, $board, $cmd_count, $fanopts;
     fanlog('Setting fans to auto');
-
-    if($board !== 'Supermicro'){
-        //if board is ASRock
-        $cmd = '';
-        for($i = 0; $i <= $cmd_count; $i++){
-            $board0 = ($i == 0) ? $board : $board.$i;
-            $raw    = $board_json[$board0]['raw'];
-            $auto   = $board_json[$board0]['auto'];
-            $cmd   .= "ipmi-raw $raw $auto $fanopts 2>&1 >/dev/null &; ";
-        }
-    }else{
-        //if board is Supermicro
-        $raw    = $board_json[$board]['raw'];
-        $auto = $board_json[$board]['auto'];
-        $mode = trim(shell_exec("ipmi-raw 00 30 45 00 | awk -F '45 00 ' '{print $2}'"));
-        $cmd  = "ipmi-raw $auto $mode $fanopts 2>&1 >/dev/null &";
+    $cmd = '';
+    switch($board) {
+        case "ASRock":
+        case "ASRockRack":
+            //if board is ASRock or AsRockRack
+            for($i = 0; $i <= $cmd_count; $i++){
+                $board0 = ($i == 0) ? $board : $board.$i;
+                $raw    = $board_json[$board0]['raw'];
+                $auto   = $board_json[$board0]['auto'];
+                $cmd   .= "ipmi-raw $raw $auto $fanopts 2>&1 >/dev/null &";
+            }
+            break;
+        case "Supermicro":
+            //if board is Supermicro
+            $raw    = $board_json[$board]['raw'];
+            $auto = $board_json[$board]['auto'];
+            $mode = trim(shell_exec("ipmi-raw 00 30 45 00 | awk -F '45 00 ' '{print $2}'"));
+            $cmd  = "ipmi-raw $auto $mode $fanopts 2>&1 >/dev/null &";
+            break;
+        case "Dell":
+            //if board is Dell
+            $raw = $board_json[$board]['raw'];
+            $auto = $board_json[$board]['auto'];
+            $cmd   = "ipmi-raw $auto $fanopts 2>&1 >/dev/null &";
+            break;
     }
     shell_exec($cmd);
+}
+
+/* manual fan */
+function manualfan() {
+    global $board_json, $board, $cmd_count, $fanopts;
+    fanlog('Setting fans to manual');
+    $cmd = '';
+    switch($board) {
+        case "ASRock":
+        case "ASRockRack":
+            //if board is ASRock or AsRockRack
+            for($i = 0; $i <= $cmd_count; $i++){
+                $board0 = ($i == 0) ? $board : $board.$i;
+                $raw    = $board_json[$board0]['raw'];
+                $auto   = $board_json[$board0]['auto'];
+                $cmd   .= "ipmi-raw $raw $auto $fanopts 2>&1 >/dev/null &";
+            }
+            break;
+        case "Supermicro":
+            //if board is Supermicro
+            $raw    = $board_json[$board]['raw'];
+            $auto = $board_json[$board]['auto'];
+            $mode = trim(shell_exec("ipmi-raw 00 30 45 00 | awk -F '45 00 ' '{print $2}'"));
+            $cmd  = "ipmi-raw $auto $mode $fanopts 2>&1 >/dev/null &";
+            break;
+        case "Dell":
+            //if board is Dell
+            $raw    = $board_json[$board]['raw'];
+            $manual = $board_json[$board]['manual'];
+            $cmd   = "ipmi-raw $manual $fanopts 2>&1 >/dev/null &";
+            break;
+    }
+    shell_exec($cmd);
+    sleep(10) ;
 }
 
 /* full speed fan */
 function fullfan() {
     global $board_json, $board, $cmd_count, $fanopts;
     fanlog('Setting fans to full speed');
-
-    if($board !== 'Supermicro'){
-        //if board is ASRock
-        $cmd = '';
-        for($i = 0; $i <= $cmd_count; $i++){
-            $board0 = ($i == 0) ? $board : $board.$i;
-            $raw    = $board_json[$board0]['raw'];
-            $full   = $board_json[$board0]['full'];
-            $cmd   .= "ipmi-raw $raw $full $fanopts 2>&1 >/dev/null &; ";
-        }
-    }else{
-        //if board is Supermicro
-        $full = $board_json[$board]['full'];
-        $cmd  = "ipmi-raw $full $fanopts 2>&1 >/dev/null &";
+    switch($board) {
+        case "ASRock":
+        case "ASRockRack":
+            //if board is ASRock
+            $cmd = '';
+            for($i = 0; $i <= $cmd_count; $i++){
+                $board0 = ($i == 0) ? $board : $board.$i;
+                $raw    = $board_json[$board0]['raw'];
+                $full   = $board_json[$board0]['full'];
+                $cmd   .= "ipmi-raw $raw $full $fanopts 2>&1 >/dev/null &";
+            }
+            break;
+        case "Supermicro":
+            //if board is Supermicro
+            $full = $board_json[$board]['full'];
+            $cmd  = "ipmi-raw $full $fanopts 2>&1 >/dev/null &";
+            break;
+        case "Dell":
+            //if board is Dell
+            $raw    = $board_json[$board]['raw'];
+            $full = $board_json[$board]['full'];
+            $cmd   = "ipmi-raw $full $fanopts 2>&1 >/dev/null &";
+            break;  
     }
-    shell_exec($cmd);
+    echo shell_exec($cmd);
     sleep(10);
 }
 
@@ -330,6 +391,9 @@ fanlog('Starting Fan Control');
 if($board == 'Supermicro'){
     fullfan();
 }
+if($board == 'Dell'){
+    manualfan();
+}
 
 while(TRUE){ while(TRUE){
 ####  DO YOUR STUFF HERE  ####
@@ -355,11 +419,12 @@ while(TRUE){ while(TRUE){
         $cmd    = '';
         $exec   = false;
         $fan_count  = 0;
+       # var_dump($fans,$raw) ;
 
         foreach($fans as $fan => $value){
 
             $temp = isset($fancfg["TEMP_$fan"]) ? $fancfg["TEMP_$fan"] : '';
-
+         #   echo "temp:".$temp;
             if(!empty($temp)) {
                 $templo  = (isset($fancfg["TEMPLO_$fan"])) ? intval($fancfg["TEMPLO_$fan"])  : 30;
                 $temphi  = (isset($fancfg["TEMPHI_$fan"])) ? intval($fancfg["TEMPHI_$fan"])  : 45;
@@ -406,24 +471,34 @@ while(TRUE){ while(TRUE){
                 $pwm ='00';
            }
 
-            if($board !== 'Supermicro'){
-                //add value to hex for Asrock boards
-                if($cmd_count !== 0 && $fan_count == 0){
-                    // set value for CPU fans for dual sockets
-                    if($pwm == '00'){
-                        $hex .= ' 00 00';
-                    }else{
-                        $hex .= " 01 $pwm";
-                    }
+           switch($board) {
+            case "ASRock":
+            case "ASRockRack":
+                switch($board_model) {
+                    case 'EP2C612 WS':
+                        $hex .= " $pwm";
+                        break;
+                    default:
+                        //add value to hex for Asrock boards
+                        if($cmd_count !== 0 && $fan_count == 0){
+                            // set value for CPU fans for dual sockets
+                            if($pwm == '00'){
+                                $hex .= ' 00 00';
+                            }else{
+                                $hex .= " 01 $pwm";
+                            }
 
-                }else{
-                    $hex .= " $pwm";
+                        }else{
+                            $hex .= " $pwm";
+                        }
+                        break;
                 }
-
-            }else{
+                break;
+            case "Supermicro":
                 //create command for Supermicro
                 $cmd_str = "ipmi-raw $raw $value $pwm $fanopts 2>&1; ";
-
+              #  echo "r$raw v$value p$pwm\n" ;
+              #  echo "$cmd_str\n" ;
                 //check if new pwm for FAN1234 then add to cmd string
                 if(($value == '00' || $value == '10') && $current_pwm !== $pwm && $pwm !== '00'){
                     $cmd .= $cmd_str;
@@ -440,12 +515,29 @@ while(TRUE){ while(TRUE){
                     $current_pwm2 = $pwm;
                     $exec = true;
                 }
+                break;
+            case "Dell":
+               # echo $pwm;
+               # $pwm = "05" ;
+                #fanlog($msg);
+                if(($value == '00' || $value == '10') && $current_pwm !== $pwm && $pwm !== '00'){
+                    $cmd = "ipmi-raw $raw $pwm $fanopts 2>&1; ";
+                    $current_pwm  = $pwm;
+                    
+                    $exec = true;
+                }
+                break;
             }
             $fan_count++;
         }
-        if($board !== 'Supermicro'){
+        switch($board) {
+            case "ASRock":
+            case "ASRockRack":
             //compare last value to new value for Asrock boards
-            $cmd_str = "ipmi-raw $raw$hex $fanopts 2>&1";
+            if($board_model == "EP2C612 WS"){
+                $hex = ltrim($hex);
+            }
+            $cmd_str = "ipmi-raw $raw$hex $fanopts 2>&1; ";
 
             if($i == 0){
 
@@ -466,11 +558,13 @@ while(TRUE){ while(TRUE){
                     $exec = true;
                 }
             }
+            break;
         }
 
         // execute command if exec set
         if($exec){
             shell_exec($cmd);
+            #fanlog($cmd);
             if($debug)
                 fanlog($cmd);
 
