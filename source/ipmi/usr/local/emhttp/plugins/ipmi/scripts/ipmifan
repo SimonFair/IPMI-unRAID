@@ -266,6 +266,7 @@ function manualfan() {
             break;
     }
     shell_exec($cmd);
+    sleep(10) ;
 }
 
 /* full speed fan */

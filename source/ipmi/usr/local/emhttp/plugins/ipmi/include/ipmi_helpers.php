@@ -341,8 +341,8 @@ function get_fanctrl_options(){
                 if($board ==='Dell'){
                     $i++;
                     if($fan1234 == 0){
-                    $name = 'FAN1234';
-                    $display = 'ALL';
+                    $name = 'FAN123456';
+                    $display = 'FAN123456';
                     $fan1234++;}                        
                     else{
                         continue;}
