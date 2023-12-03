@@ -204,7 +204,7 @@ function debug($m){
 
 /* auto fan */
 function autofan() {
-    global $board_json, $board, $cmd_count, $fanopts;
+    global $board_json, $board, $board_model, $cmd_count, $fanopts;
     fanlog('Setting fans to auto');
     $cmd = '';
     switch($board) {
@@ -237,7 +237,7 @@ function autofan() {
 
 /* manual fan */
 function manualfan() {
-    global $board_json, $board, $cmd_count, $fanopts;
+    global $board_json, $board, $board_model, $cmd_count, $fanopts;
     fanlog('Setting fans to manual');
     $cmd = '';
     switch($board) {
@@ -271,7 +271,7 @@ function manualfan() {
 
 /* full speed fan */
 function fullfan() {
-    global $board_json, $board, $cmd_count, $fanopts;
+    global $board_json, $board, $board_model, $cmd_count, $fanopts;
     fanlog('Setting fans to full speed');
     switch($board) {
         case "ASRock":
@@ -395,6 +395,8 @@ if($board == 'Dell'){
     manualfan();
 }
 
+fanlog("Board: $board Board Model: $board_model");
+
 while(TRUE){ while(TRUE){
 ####  DO YOUR STUFF HERE  ####
 
@@ -497,8 +499,6 @@ while(TRUE){ while(TRUE){
             case "Supermicro":
                 //create command for Supermicro
                 $cmd_str = "ipmi-raw $raw $value $pwm $fanopts 2>&1; ";
-              #  echo "r$raw v$value p$pwm\n" ;
-              #  echo "$cmd_str\n" ;
                 //check if new pwm for FAN1234 then add to cmd string
                 if(($value == '00' || $value == '10') && $current_pwm !== $pwm && $pwm !== '00'){
                     $cmd .= $cmd_str;
@@ -534,9 +534,6 @@ while(TRUE){ while(TRUE){
             case "ASRock":
             case "ASRockRack":
             //compare last value to new value for Asrock boards
-            if($board_model == "EP2C612 WS"){
-                $hex = ltrim($hex);
-            }
             $cmd_str = "ipmi-raw $raw$hex $fanopts 2>&1; ";
 
             if($i == 0){
