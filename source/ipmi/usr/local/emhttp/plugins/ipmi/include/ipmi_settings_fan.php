@@ -34,10 +34,9 @@ switch($board) {
     case  'Supermicro': 
     //if board is Supermicro
     $cmd_count = 0;
-    $board_model = ( $override == 'disable') ? intval(shell_exec("dmidecode -qt2|awk -F: '/^\tProduct Name:/{p=\$2} END{print substr(p,3,1)}'")) : $omodel;
     $board_file_status = true;
     #if($board_model == '9'){
-      switch($board_model){
+      switch($smboard_model){
         case '9':
         $range = 255;
         $board_json = [ 'Supermicro' =>

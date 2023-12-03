@@ -18,7 +18,12 @@ Cond="exec(\"grep -o '^OVERRIDE=.enable' /boot/config/plugins/ipmi/ipmi.cfg 2>/d
 <input type="hidden" name="#file" value="ipmi/fan.cfg" />
 <input type="hidden" id="FANCMD" name="#command" value="" />
 
-
+<dl>
+    <dt>Motherboard and Model:</dt> 
+    <dd> 
+        <span><?=$board." ".$board_model." ".$sm_gen?></span>
+    </dd>
+</dl>
 <dl>
     <dt>Fan Control:</dt>
     <dd>

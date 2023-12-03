@@ -390,15 +390,15 @@ $curent_hex   = '';
 $current_hex2 = '';
 
 fanlog('Starting Fan Control');
+fanlog("Board: $board Board Model: $board_model");
 
 if($board == 'Supermicro'){
+    fanlog("SM Board selection: $smboard_model");
     fullfan();
 }
 if($board == 'Dell'){
     manualfan();
 }
-
-fanlog("Board: $board Board Model: $board_model");
 
 while(TRUE){ while(TRUE){
 ####  DO YOUR STUFF HERE  ####
