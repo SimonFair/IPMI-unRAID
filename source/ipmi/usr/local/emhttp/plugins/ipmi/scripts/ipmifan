@@ -6,11 +6,14 @@
 require_once '/usr/local/emhttp/plugins/ipmi/include/ipmi_options.php';
 require_once '/usr/local/emhttp/plugins/ipmi/include/ipmi_settings_fan.php';
 require_once '/usr/local/emhttp/plugins/ipmi/include/ipmi_drives.php';
+require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
+
+extract(parse_plugin_cfg('dynamix',true));
 $debug = FALSE;
 
 set_time_limit(0);
 $prog     = pathinfo(__FILE__, PATHINFO_FILENAME);
-$lockfile = "/var/run/${prog}.pid";
+$lockfile = "/var/run/{$prog}.pid";
 $log      = '/var/log/ipmifan';
 $service  = __FILE__;
 openlog($prog, LOG_PID | LOG_PERROR, LOG_LOCAL0);
@@ -327,12 +330,12 @@ function get_highest_temp(){
                 $ua_key = "/dev/".$hdd['device'];
                 $temp = (array_key_exists($ua_key, $ua_devs)) ? $ua_devs[$ua_key]['temp'] : 0;
             }else
-                $temp = preg_replace("/\s+/", "", shell_exec("smartctl -A -n standby /dev/${hdd} 2>/dev/null| grep -m 1 -i Temperature_Cel | awk '{print $10}'"));
+                $temp = preg_replace("/\s+/", "", shell_exec("smartctl -A -n standby /dev/{$hdd} 2>/dev/null| grep -m 1 -i Temperature_Cel | awk '{print $10}'"));
 
             $highest_temp = ($temp > $highest_temp) ? $temp : $highest_temp;
         }
     }
-    debug("Highest temp is ${highest_temp}ºC");
+    debug("Highest temp is {$highest_temp}ºC");
     return $highest_temp;
 }
 
@@ -467,7 +470,8 @@ while(TRUE){ while(TRUE){
 
                 //add fan, value, temp sensor name and reading
                 $pct  = str_pad(round($pct*100), 2, ' ', STR_PAD_LEFT);
-                $msg .= ", ${fan}(${pct}%):".str_replace('Temperature','Temp',$name)."(${reading}°C)";
+                $mytemp = str_replace(" ","",my_temp($reading));
+                $msg .= ", {$fan}({$pct}%):".str_replace('Temperature','Temp',$name)."($mytemp)";
 
            }else{
                 $pwm ='00';
