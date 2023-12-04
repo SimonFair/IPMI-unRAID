@@ -1,6 +1,7 @@
 <?
 require_once '/usr/local/emhttp/plugins/ipmi/include/ipmi_options.php';
 require_once '/usr/local/emhttp/plugins/ipmi/include/ipmi_drives.php';
+require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
 
 $action = array_key_exists('action', $_GET) ? htmlspecialchars($_GET['action']) : '';
 $hdd_temp = get_highest_temp();
@@ -199,7 +200,7 @@ function ipmi_get_options($selected=null){
         if ($selected == $id)
             $options .= " selected";
 
-        $options .= ">$name$ip - $reading $units</option>";
+        $options .= ">$name$ip - ".my_temp($reading)."</option>";
     }
     return $options;
 }
@@ -360,7 +361,7 @@ function get_fanctrl_options(){
                 // fan name: reading => temp name: reading
                 echo '<dl><dt>',$display,' (',floatval($fan['Reading']),' ',$fan['Units'],'):</dt><dd><span class="fanctrl-basic">';
                 if ($temp['Name']){
-                    echo $temp['Name'],' ('.floatval($temp['Reading']),' ',$temp['Units'].'), ',
+                    echo $temp['Name'],' ('.my_temp(floatval($temp['Reading'])),' ','), ',
                     $fancfg[$templo],', ',$fancfg[$temphi],', ',number_format((intval(intval($fancfg[$fanmin])/$range*1000)/10),1),'-',number_format((intval(intval($fancfg[$fanmax])/$range*1000)/10),1),'%';
                 }else{
                     echo 'Auto';
