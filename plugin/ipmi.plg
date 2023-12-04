@@ -3,7 +3,7 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ipmi">
 <!ENTITY author    "SimonFair">
-<!ENTITY version   "2023.12.02">
+<!ENTITY version   "2023.12.04">
 <!ENTITY launch    "Settings/IPMI">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/&author;/IPMI-unRAID/master">
 <!ENTITY pluginURL "&gitURL;/plugin/&name;.plg">
@@ -17,6 +17,11 @@
 
 <CHANGES>
 ##&name;
+###2023.12.04
+- Add Conversion to between C and F if set in display settings.
+- Add Board and Model to Settings and Fan page.
+- Fix X12 model support.
+- Fix EP2C612WS check.
 ###2023.12.02
 - Add FAN Control support for Dell systems.
 - Add Supermicro X12 options. Thanks to C4Wiz for PR.
