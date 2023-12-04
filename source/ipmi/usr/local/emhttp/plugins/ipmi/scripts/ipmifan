@@ -6,11 +6,14 @@
 require_once '/usr/local/emhttp/plugins/ipmi/include/ipmi_options.php';
 require_once '/usr/local/emhttp/plugins/ipmi/include/ipmi_settings_fan.php';
 require_once '/usr/local/emhttp/plugins/ipmi/include/ipmi_drives.php';
+require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
+
+extract(parse_plugin_cfg('dynamix',true));
 $debug = FALSE;
 
 set_time_limit(0);
 $prog     = pathinfo(__FILE__, PATHINFO_FILENAME);
-$lockfile = "/var/run/${prog}.pid";
+$lockfile = "/var/run/{$prog}.pid";
 $log      = '/var/log/ipmifan';
 $service  = __FILE__;
 openlog($prog, LOG_PID | LOG_PERROR, LOG_LOCAL0);
@@ -204,7 +207,7 @@ function debug($m){
 
 /* auto fan */
 function autofan() {
-    global $board_json, $board, $cmd_count, $fanopts;
+    global $board_json, $board, $board_model, $cmd_count, $fanopts;
     fanlog('Setting fans to auto');
     $cmd = '';
     switch($board) {
@@ -237,7 +240,7 @@ function autofan() {
 
 /* manual fan */
 function manualfan() {
-    global $board_json, $board, $cmd_count, $fanopts;
+    global $board_json, $board, $board_model, $cmd_count, $fanopts;
     fanlog('Setting fans to manual');
     $cmd = '';
     switch($board) {
@@ -271,7 +274,7 @@ function manualfan() {
 
 /* full speed fan */
 function fullfan() {
-    global $board_json, $board, $cmd_count, $fanopts;
+    global $board_json, $board, $board_model, $cmd_count, $fanopts;
     fanlog('Setting fans to full speed');
     switch($board) {
         case "ASRock":
@@ -327,12 +330,12 @@ function get_highest_temp(){
                 $ua_key = "/dev/".$hdd['device'];
                 $temp = (array_key_exists($ua_key, $ua_devs)) ? $ua_devs[$ua_key]['temp'] : 0;
             }else
-                $temp = preg_replace("/\s+/", "", shell_exec("smartctl -A -n standby /dev/${hdd} 2>/dev/null| grep -m 1 -i Temperature_Cel | awk '{print $10}'"));
+                $temp = preg_replace("/\s+/", "", shell_exec("smartctl -A -n standby /dev/{$hdd} 2>/dev/null| grep -m 1 -i Temperature_Cel | awk '{print $10}'"));
 
             $highest_temp = ($temp > $highest_temp) ? $temp : $highest_temp;
         }
     }
-    debug("Highest temp is ${highest_temp}ºC");
+    debug("Highest temp is {$highest_temp}ºC");
     return $highest_temp;
 }
 
@@ -387,8 +390,10 @@ $curent_hex   = '';
 $current_hex2 = '';
 
 fanlog('Starting Fan Control');
+fanlog("Board: $board Board Model: $board_model");
 
 if($board == 'Supermicro'){
+    fanlog("SM Board selection: $smboard_model");
     fullfan();
 }
 if($board == 'Dell'){
@@ -465,7 +470,8 @@ while(TRUE){ while(TRUE){
 
                 //add fan, value, temp sensor name and reading
                 $pct  = str_pad(round($pct*100), 2, ' ', STR_PAD_LEFT);
-                $msg .= ", ${fan}(${pct}%):".str_replace('Temperature','Temp',$name)."(${reading}°C)";
+                $mytemp = str_replace(" ","",my_temp($reading));
+                $msg .= ", {$fan}({$pct}%):".str_replace('Temperature','Temp',$name)."($mytemp)";
 
            }else{
                 $pwm ='00';
@@ -497,8 +503,6 @@ while(TRUE){ while(TRUE){
             case "Supermicro":
                 //create command for Supermicro
                 $cmd_str = "ipmi-raw $raw $value $pwm $fanopts 2>&1; ";
-              #  echo "r$raw v$value p$pwm\n" ;
-              #  echo "$cmd_str\n" ;
                 //check if new pwm for FAN1234 then add to cmd string
                 if(($value == '00' || $value == '10') && $current_pwm !== $pwm && $pwm !== '00'){
                     $cmd .= $cmd_str;
@@ -534,9 +538,6 @@ while(TRUE){ while(TRUE){
             case "ASRock":
             case "ASRockRack":
             //compare last value to new value for Asrock boards
-            if($board_model == "EP2C612 WS"){
-                $hex = ltrim($hex);
-            }
             $cmd_str = "ipmi-raw $raw$hex $fanopts 2>&1; ";
 
             if($i == 0){

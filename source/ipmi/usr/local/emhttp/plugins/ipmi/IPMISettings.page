@@ -17,6 +17,9 @@ Tag="cog"
 <form markdown="1" id="settings-ipmi" name="ipmi_settings" method="POST" action="/update.php" target="progressFrame">
 <input type="hidden" name="#file" value="ipmi/ipmi.cfg" />
 
+Motherboard and Model:
+: <span><?=$board." ".$board_model." ".$sm_gen?></span>
+
 Enable Network Connection(s):
 : <select id="NETWORK" class="ipmi-run" name="NETWORK" size="1"  title="Enable connection to network based ipmi, not necessary for local onboard ipmi">
   <?=mk_option($netsvc, 'disable', 'No');?>
