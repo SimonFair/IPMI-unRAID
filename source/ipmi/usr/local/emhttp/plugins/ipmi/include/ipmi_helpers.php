@@ -199,8 +199,7 @@ function ipmi_get_options($selected=null){
         // set saved option as selected
         if ($selected == $id)
             $options .= " selected";
-
-        $options .= ">$name$ip - ".my_temp($reading)."</option>";
+        if ($sensor['Type'] == "Temperature")  $options .= ">$name$ip - ".my_temp($reading)."</option>"; else $options .= ">$name$ip - $reading $units</option>" ;
     }
     return $options;
 }
