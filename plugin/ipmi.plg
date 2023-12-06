@@ -3,7 +3,7 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ipmi">
 <!ENTITY author    "SimonFair">
-<!ENTITY version   "2023.12.05">
+<!ENTITY version   "2023.12.06">
 <!ENTITY launch    "Settings/IPMI">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/&author;/IPMI-unRAID/master">
 <!ENTITY pluginURL "&gitURL;/plugin/&name;.plg">
@@ -17,6 +17,9 @@
 
 <CHANGES>
 ##&name;
+###2023.12.06
+- Add secondary Temp check if HDD is primary and disk have spundown.
+- Add JSON to config page.
 ###2023.12.05
 - Fix X12 Fan
 - Add Spundown text and Fix Fan RPM unit.
