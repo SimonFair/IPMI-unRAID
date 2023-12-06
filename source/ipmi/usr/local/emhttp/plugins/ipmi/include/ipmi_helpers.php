@@ -395,13 +395,13 @@ function get_fanctrl_options(){
                 
                 if ($fancfg[$tempid] == "99") $disabled = "" ; else $disabled = " disabled ";
 
-                    // temperature sensor 2
-                    echo '<dl  class="fanctrl-settings">',
-                    '<dt><dl><dd >HDD Spundown Temperature sensor:</dd></dl></dt><dd>',
-                    '<select'.$disabled.' name="',$temphdd,'" class="fanctrl-temp fanctrl-settings">',
-                    '<option value="0">None</option>',
-                    get_temp_options($fancfg[$temphdd]),
-                    '</select></dd></dl>';
+                // temperature sensor 2
+                echo '<dl  class="fanctrl-settings">',
+                '<dt><dl><dd >HDD Spundown Temperature sensor:</dd></dl></dt><dd>',
+                '<select'.$disabled.' name="',$temphdd,'" class="fanctrl-temp fanctrl-settings">',
+                '<option value="0">None</option>',
+                get_temp_options($fancfg[$temphdd]),
+                '</select></dd></dl>';
 
                 // high temperature threshold
                 echo '<dl class="fanctrl-settings">',
