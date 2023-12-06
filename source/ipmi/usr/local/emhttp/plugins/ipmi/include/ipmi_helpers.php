@@ -5,6 +5,7 @@ require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
 
 $action = array_key_exists('action', $_GET) ? htmlspecialchars($_GET['action']) : '';
 $hdd_temp = get_highest_temp();
+$display_unit = $display['unit'];
 
 if (!empty($action)) {
     $state = ['Critical' => 'red', 'Warning' => 'yellow', 'Nominal' => 'green', 'N/A' => 'blue'];
@@ -294,7 +295,7 @@ function ipmi_fan_sensors($ignore=null) {
 
 /* get all fan options for fan control */
 function get_fanctrl_options(){
-    global $fansensors, $fancfg, $board, $board_json, $board_file_status, $board_status, $cmd_count, $range;
+    global $fansensors, $fancfg, $board, $board_json, $board_file_status, $board_status, $cmd_count, $range, $display_unit;
     if($board_status) {
         $i = 0;
         $fan1234 = 0;
@@ -348,6 +349,7 @@ function get_fanctrl_options(){
                         continue;}
                 }
                 $tempid  = 'TEMP_'.$name;
+                $temphdd  = 'TEMPHDD_'.$name;
                 $temp    = $fansensors[$fancfg[$tempid]];
                 $templo  = 'TEMPLO_'.$name;
                 $temphi  = 'TEMPHI_'.$name;
@@ -390,19 +392,29 @@ function get_fanctrl_options(){
                 '<option value="0">Auto</option>',
                 get_temp_options($fancfg[$tempid]),
                 '</select></dd></dl>';
+                
+                if ($fancfg[$tempid] == "99") $disabled = "" ; else $disabled = " disabled ";
+
+                // temperature sensor 2
+                echo '<dl  class="fanctrl-settings">',
+                '<dt><dl><dd >HDD Spundown Temperature sensor:</dd></dl></dt><dd>',
+                '<select'.$disabled.' name="',$temphdd,'" class="fanctrl-temp fanctrl-settings">',
+                '<option value="0">None</option>',
+                get_temp_options($fancfg[$temphdd]),
+                '</select></dd></dl>';
 
                 // high temperature threshold
                 echo '<dl class="fanctrl-settings">',
-                '<dt><dl><dd>High temperature threshold (&deg;C):</dd></dl></dt>',
+                '<dt><dl><dd>High temperature threshold (&deg;'.$display_unit.'):</dd></dl></dt>',
                 '<dd><select name="',$temphi,'" class="',$tempid,' fanctrl-settings">',
-                get_temp_range('HI', $fancfg[$temphi]),
+                get_temp_range('HI', $fancfg[$temphi],$display_unit),
                 '</select></dd></dl>';
 
                 // low temperature threshold
                 echo '<dl class="fanctrl-settings">',
-                '<dt><dl><dd>Low temperature threshold (&deg;C):</dd></dl></dt>',
+                '<dt><dl><dd>Low temperature threshold (&deg;'.$display_unit.'):</dd></dl></dt>',
                 '<dd><select name="',$templo,'" class="',$tempid,' fanctrl-settings">',
-                get_temp_range('LO', $fancfg[$templo]),
+                get_temp_range('LO', $fancfg[$templo],$display_unit),
                 '</select></dd></dl>';
 
                 // fan control maximum speed
@@ -447,7 +459,7 @@ function get_temp_options($selected=0){
 }
 
 /* get options for high or low temp thresholds */
-function get_temp_range($order, $selected=0){
+function get_temp_range($order, $selected=0,$unit = "C"){
     $temps = [20,80];
     if ($order === 'HI')
       rsort($temps);
@@ -458,7 +470,7 @@ function get_temp_range($order, $selected=0){
         // set saved option as selected
         if (intval($selected) === $temp)
             $options .= " selected";
-
+        if ($unit == "F") $temp=round(9/5*$temp)+32; ;
         $options .= ">$temp</option>";
     }
     return $options;

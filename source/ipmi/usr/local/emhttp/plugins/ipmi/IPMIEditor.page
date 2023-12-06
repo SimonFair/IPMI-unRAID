@@ -47,6 +47,7 @@ Markdown="false"
         <option>Select Config...</option>
         <option>Config</option>
         <option>Sensors</option>
+        <option>Json</option>
     </select>
 </span>
 <span class="status" style="margin-top: 5px;" id="load-switch" hidden><input type="checkbox" id="autoload-switch"></span>
