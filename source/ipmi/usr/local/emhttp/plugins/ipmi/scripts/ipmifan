@@ -437,7 +437,13 @@ while(TRUE){ while(TRUE){
                 $fanmax  = (isset($fancfg["FANMAX_$fan"])) ? intval($fancfg["FANMAX_$fan"])  : $range;
                 $reading = floatval($sensors[$temp]['Reading']);
                 $name    = htmlspecialchars($sensors[$temp]['Name']);
-
+                if ($temp = "99" && $reading <= 0) {
+                    if (isset($fancfg["TEMPHDD_$fan"]) &&  $fancfg["TEMPHDD_$fan"] != 0) {
+                    $temp=    $fancfg["TEMPHDD_$fan"] ;
+                    $reading = floatval($sensors[$temp]['Reading']);
+                    $name    = "HDD Spundown using ".htmlspecialchars($sensors[$temp]['Name']);
+                    }  
+                }
                 if ($reading <= $templo){
                     $pct = 0;
                     $pwm = 1;
