@@ -97,7 +97,25 @@ if($return_var){
         'success' => true];
     if(isset($_POST['config']) && $_POST['config'] == "2" && $return['config'] == false)
         {
-            $return['config'] = "Dummy" ;
+            $return['config'] = '
+{
+    "ASRockRack": {
+        "raw": "00 3a 01",
+        "auto": "00 00 00 00 00 00 00 00",
+        "full": "64 64 64 64 64 64 64 64",
+        "fans": {
+            "CPU1_FAN1": "01",
+            "CPU2_FAN1": "01",
+            "REAR_FAN1": "01",
+            "NOT_AVAILABLE": "01",
+            "FRNT_FAN1": "01",
+            "FRNT_FAN2": "01",
+            "FRNT_FAN3": "01",
+            "FRNT_FAN4": "11"
+        }
+    }
+}
+            ' ;
         }
 }
 echo json_encode($return);
