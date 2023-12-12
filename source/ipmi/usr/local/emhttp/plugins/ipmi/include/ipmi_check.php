@@ -10,4 +10,7 @@ if ($board == "Supermicro") {
     if ($smboard_model == '1') $smboard_model = ( $override == 'disable') ? intval(shell_exec("dmidecode -qt2|awk -F: '/^\tProduct Name:/{p=\$2} END{print substr(p,3,2)}'")) : $omodel;
     $sm_gen="Gen:$smboard_model";
 }
+if ($board == "Dell") {
+    $board_model = ( $override == 'disable') ? rtrim(ltrim(shell_exec("dmidecode -qt1|awk -F: '/^\tProduct Name:/ {print $2}'"))) : $omodel;
+  }
 ?>
