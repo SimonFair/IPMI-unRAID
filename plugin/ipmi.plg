@@ -3,7 +3,7 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ipmi">
 <!ENTITY author    "SimonFair">
-<!ENTITY version   "2023.12.06">
+<!ENTITY version   "2023.12.12">
 <!ENTITY launch    "Settings/IPMI">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/&author;/IPMI-unRAID/master">
 <!ENTITY pluginURL "&gitURL;/plugin/&name;.plg">
@@ -17,6 +17,8 @@
 
 <CHANGES>
 ##&name;
+###2023.12.12
+- Chg Dell model type to show name rather than part numner
 ###2023.12.06
 - Add secondary Temp check if HDD is primary and disk have spundown.
 - Add JSON to config page.
