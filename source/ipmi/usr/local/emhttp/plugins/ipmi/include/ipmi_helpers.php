@@ -5,7 +5,8 @@ require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
 
 $action = array_key_exists('action', $_GET) ? htmlspecialchars($_GET['action']) : '';
 $hdd_temp = get_highest_temp();
-$display_unit = $display['unit'];
+extract(parse_plugin_cfg('dynamix',true));
+if (isset($display['unit'])) $display_unit = $display['unit']; else $display_unit = "C";
 
 if (!empty($action)) {
     $state = ['Critical' => 'red', 'Warning' => 'yellow', 'Nominal' => 'green', 'N/A' => 'blue'];
@@ -59,7 +60,7 @@ function get_highest_temp(){
 }
 
 /* get an array of all sensors and their values */
-function ipmi_sensors($ignore=null) {
+function ipmi_sensors($ignore='') {
     global $ipmi, $netopts, $hdd_temp;
 
     // return empty array if no ipmi detected and no network options
@@ -77,6 +78,7 @@ function ipmi_sensors($ignore=null) {
         return [];
 
     // add highest hard drive temp sensor and check if hdd is ignored
+    $all = true ;
     $hdd = ((preg_match('/99/', $ignore)) && !$all) ? '' :
         "99,HDD Temperature,Temperature,Nominal,$hdd_temp,C,N/A,N/A,N/A,45.00,50.00,N/A,Ok";
     if(!empty($hdd)){
@@ -120,7 +122,7 @@ function ipmi_sensors($ignore=null) {
 /* get array of events and their values */
 function ipmi_events($archive=null){
     global $ipmi, $netopts;
-
+    $return_var = null;
     // return empty array if no ipmi detected or network options
     if(!($ipmi || !empty($netopts)))
         return [];
@@ -208,7 +210,7 @@ function ipmi_get_options($selected=null){
 /* get select options for enabled sensors */
 function ipmi_get_enabled($ignore){
     global $ipmi, $netopts, $allsensors;
-
+    $options = "";
     // return empty array if no ipmi detected or network options
     if(!($ipmi || !empty($netopts)))
         return [];
@@ -498,6 +500,7 @@ function get_minmax_options($order, $selected=0){
 /* get network ip options for fan control */
 function get_fanip_options(){
     global $ipaddr, $fanip;
+    $options = "";
     $ips = 'None,'.$ipaddr;
     $ips = explode(',',$ips);
         foreach($ips as $ip){
@@ -513,6 +516,7 @@ function get_fanip_options(){
 function get_hdd_options($ignore=null) {
     $hdds = get_all_hdds();
     $ignored = array_flip(explode(',', $ignore));
+    $options = "";
     foreach ($hdds as $serial => $hdd) {
         $options .= "<option value='$serial'";
 
