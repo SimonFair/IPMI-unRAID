@@ -5,7 +5,8 @@ require_once '/usr/local/emhttp/plugins/dynamix/include/Helpers.php';
 
 $action = array_key_exists('action', $_GET) ? htmlspecialchars($_GET['action']) : '';
 $hdd_temp = get_highest_temp();
-$display_unit = $display['unit'];
+extract(parse_plugin_cfg('dynamix',true));
+if (isset($display['unit'])) $display_unit = $display['unit']; else $display_unit = "C";
 
 if (!empty($action)) {
     $state = ['Critical' => 'red', 'Warning' => 'yellow', 'Nominal' => 'green', 'N/A' => 'blue'];
@@ -59,7 +60,7 @@ function get_highest_temp(){
 }
 
 /* get an array of all sensors and their values */
-function ipmi_sensors($ignore=null) {
+function ipmi_sensors($ignore='') {
     global $ipmi, $netopts, $hdd_temp;
 
     // return empty array if no ipmi detected and no network options
@@ -77,6 +78,7 @@ function ipmi_sensors($ignore=null) {
         return [];
 
     // add highest hard drive temp sensor and check if hdd is ignored
+    $all = true ;
     $hdd = ((preg_match('/99/', $ignore)) && !$all) ? '' :
         "99,HDD Temperature,Temperature,Nominal,$hdd_temp,C,N/A,N/A,N/A,45.00,50.00,N/A,Ok";
     if(!empty($hdd)){
@@ -120,7 +122,7 @@ function ipmi_sensors($ignore=null) {
 /* get array of events and their values */
 function ipmi_events($archive=null){
     global $ipmi, $netopts;
-
+    $return_var = null;
     // return empty array if no ipmi detected or network options
     if(!($ipmi || !empty($netopts)))
         return [];
@@ -208,7 +210,7 @@ function ipmi_get_options($selected=null){
 /* get select options for enabled sensors */
 function ipmi_get_enabled($ignore){
     global $ipmi, $netopts, $allsensors;
-
+    $options = "";
     // return empty array if no ipmi detected or network options
     if(!($ipmi || !empty($netopts)))
         return [];
@@ -351,21 +353,34 @@ function get_fanctrl_options(){
                 $tempid  = 'TEMP_'.$name;
                 $temphdd  = 'TEMPHDD_'.$name;
                 $temp    = $fansensors[$fancfg[$tempid]];
+                $temphddd    = $fansensors[$fancfg[$temphdd]];
                 $templo  = 'TEMPLO_'.$name;
                 $temphi  = 'TEMPHI_'.$name;
                 $fanmax  = 'FANMAX_'.$name;
                 $fanmin  = 'FANMIN_'.$name;
+                $temploo  = 'TEMPLOO_'.$name;
+                $temphio  = 'TEMPHIO_'.$name;
+                $fanmaxo  = 'FANMAXO_'.$name;
+                $fanmino  = 'FANMINO_'.$name;
 
                 // hidden fan id
                 echo '<input type="hidden" name="FAN_',$name,'" value="',$id,'"/>';
 
                 // fan name: reading => temp name: reading
-                echo '<dl><dt>',$display,' (',floatval($fan['Reading']),' ',$fan['Units'],'):</dt><dd><span class="fanctrl-basic">';
+                echo '<dl><dt>',$display,' (',floatval($fan['Reading']),' ',$fan['Units'],'):</dt><span class="fanctrl-basic">';
                 if ($temp['Name']){
                     echo $temp['Name'],' ('.my_temp(floatval($temp['Reading'])),' ','), ',
                     $fancfg[$templo],', ',$fancfg[$temphi],', ',number_format((intval(intval($fancfg[$fanmin])/$range*1000)/10),1),'-',number_format((intval(intval($fancfg[$fanmax])/$range*1000)/10),1),'%';
                 }else{
                     echo 'Auto';
+                }
+                
+                echo $display,' (',floatval($fan['Reading']),' ',$fan['Units'],'):';
+                if (isset($temphddd['Name'])){
+                    echo "&nbsp;&nbsp;&nbsp;&nbsp;Override:".$temphddd['Name'].' ('.my_temp(floatval($temp['Reading'])),' ','), ',
+                    $fancfg[$temploo],', ',$fancfg[$temphio],', ',number_format((intval(intval($fancfg[$fanmino])/$range*1000)/10),1),'-',number_format((intval(intval($fancfg[$fanmaxo])/$range*1000)/10),1),'%';
+                }else{
+                    echo 'Not Defined';
                 }
                 echo '</span><span class="fanctrl-settings">&nbsp;</span>';
 
@@ -429,6 +444,34 @@ function get_fanctrl_options(){
                 '<dt><dl><dd>Fan speed minimum (%):</dd></dl></dt><dd>',
                 '<select name="',$fanmin,'" class="',$tempid,' fanctrl-settings">',
                 get_minmax_options('LO', $fancfg[$fanmin]),
+                '</select></dd></dl>&nbsp;';
+       
+                // high temperature threshold Override
+                echo '<dl class="fanctrl-settings">',
+                '<dt><dl><dd>High temperature threshold Overide(&deg;'.$display_unit.'):</dd></dl></dt>',
+                '<dd><select name="',$temphio,'" class="',$tempid,' fanctrl-settings">',
+                get_temp_range('HI', $fancfg[$temphio],$display_unit),
+                '</select></dd></dl>';
+
+                // low temperature threshold Override
+                echo '<dl class="fanctrl-settings">',
+                '<dt><dl><dd>Low temperature threshold Overide(&deg;'.$display_unit.'):</dd></dl></dt>',
+                '<dd><select name="',$temploo,'" class="',$tempid,' fanctrl-settings">',
+                get_temp_range('LO', $fancfg[$temploo],$display_unit),
+                '</select></dd></dl>';
+
+                // fan control maximum speed Override
+                echo '<dl class="fanctrl-settings">',
+                '<dt><dl><dd>Fan speed maximum Overide(%):</dd></dl></dt><dd>',
+                '<select name="',$fanmaxo,'" class="',$tempid,' fanctrl-settings">',
+                get_minmax_options('HI', $fancfg[$fanmaxo]),
+                '</select></dd></dl>';
+
+                // fan control minimum speed Override
+                echo '<dl class="fanctrl-settings">',
+                '<dt><dl><dd>Fan speed minimum Overide(%):</dd></dl></dt><dd>',
+                '<select name="',$fanmino,'" class="',$tempid,' fanctrl-settings">',
+                get_minmax_options('LO', $fancfg[$fanmino]),
                 '</select></dd></dl>&nbsp;';
 
                 $i++;
@@ -498,6 +541,7 @@ function get_minmax_options($order, $selected=0){
 /* get network ip options for fan control */
 function get_fanip_options(){
     global $ipaddr, $fanip;
+    $options = "";
     $ips = 'None,'.$ipaddr;
     $ips = explode(',',$ips);
         foreach($ips as $ip){
@@ -513,6 +557,7 @@ function get_fanip_options(){
 function get_hdd_options($ignore=null) {
     $hdds = get_all_hdds();
     $ignored = array_flip(explode(',', $ignore));
+    $options = "";
     foreach ($hdds as $serial => $hdd) {
         $options .= "<option value='$serial'";
 
