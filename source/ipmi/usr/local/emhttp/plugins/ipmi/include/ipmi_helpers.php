@@ -353,21 +353,34 @@ function get_fanctrl_options(){
                 $tempid  = 'TEMP_'.$name;
                 $temphdd  = 'TEMPHDD_'.$name;
                 $temp    = $fansensors[$fancfg[$tempid]];
+                $temphddd    = $fansensors[$fancfg[$temphdd]];
                 $templo  = 'TEMPLO_'.$name;
                 $temphi  = 'TEMPHI_'.$name;
                 $fanmax  = 'FANMAX_'.$name;
                 $fanmin  = 'FANMIN_'.$name;
+                $temploo  = 'TEMPLOO_'.$name;
+                $temphio  = 'TEMPHIO_'.$name;
+                $fanmaxo  = 'FANMAXO_'.$name;
+                $fanmino  = 'FANMINO_'.$name;
 
                 // hidden fan id
                 echo '<input type="hidden" name="FAN_',$name,'" value="',$id,'"/>';
 
                 // fan name: reading => temp name: reading
-                echo '<dl><dt>',$display,' (',floatval($fan['Reading']),' ',$fan['Units'],'):</dt><dd><span class="fanctrl-basic">';
+                echo '<dl><dt>',$display,' (',floatval($fan['Reading']),' ',$fan['Units'],'):</dt><span class="fanctrl-basic">';
                 if ($temp['Name']){
                     echo $temp['Name'],' ('.my_temp(floatval($temp['Reading'])),' ','), ',
                     $fancfg[$templo],', ',$fancfg[$temphi],', ',number_format((intval(intval($fancfg[$fanmin])/$range*1000)/10),1),'-',number_format((intval(intval($fancfg[$fanmax])/$range*1000)/10),1),'%';
                 }else{
                     echo 'Auto';
+                }
+                
+                echo $display,' (',floatval($fan['Reading']),' ',$fan['Units'],'):';
+                if (isset($temphddd['Name'])){
+                    echo "&nbsp;&nbsp;&nbsp;&nbsp;Override:".$temphddd['Name'].' ('.my_temp(floatval($temp['Reading'])),' ','), ',
+                    $fancfg[$temploo],', ',$fancfg[$temphio],', ',number_format((intval(intval($fancfg[$fanmino])/$range*1000)/10),1),'-',number_format((intval(intval($fancfg[$fanmaxo])/$range*1000)/10),1),'%';
+                }else{
+                    echo 'Not Defined';
                 }
                 echo '</span><span class="fanctrl-settings">&nbsp;</span>';
 
@@ -431,6 +444,34 @@ function get_fanctrl_options(){
                 '<dt><dl><dd>Fan speed minimum (%):</dd></dl></dt><dd>',
                 '<select name="',$fanmin,'" class="',$tempid,' fanctrl-settings">',
                 get_minmax_options('LO', $fancfg[$fanmin]),
+                '</select></dd></dl>&nbsp;';
+       
+                // high temperature threshold Override
+                echo '<dl class="fanctrl-settings">',
+                '<dt><dl><dd>High temperature threshold Overide(&deg;'.$display_unit.'):</dd></dl></dt>',
+                '<dd><select name="',$temphio,'" class="',$tempid,' fanctrl-settings">',
+                get_temp_range('HI', $fancfg[$temphio],$display_unit),
+                '</select></dd></dl>';
+
+                // low temperature threshold Override
+                echo '<dl class="fanctrl-settings">',
+                '<dt><dl><dd>Low temperature threshold Overide(&deg;'.$display_unit.'):</dd></dl></dt>',
+                '<dd><select name="',$temploo,'" class="',$tempid,' fanctrl-settings">',
+                get_temp_range('LO', $fancfg[$temploo],$display_unit),
+                '</select></dd></dl>';
+
+                // fan control maximum speed Override
+                echo '<dl class="fanctrl-settings">',
+                '<dt><dl><dd>Fan speed maximum Overide(%):</dd></dl></dt><dd>',
+                '<select name="',$fanmaxo,'" class="',$tempid,' fanctrl-settings">',
+                get_minmax_options('HI', $fancfg[$fanmaxo]),
+                '</select></dd></dl>';
+
+                // fan control minimum speed Override
+                echo '<dl class="fanctrl-settings">',
+                '<dt><dl><dd>Fan speed minimum Overide(%):</dd></dl></dt><dd>',
+                '<select name="',$fanmino,'" class="',$tempid,' fanctrl-settings">',
+                get_minmax_options('LO', $fancfg[$fanmino]),
                 '</select></dd></dl>&nbsp;';
 
                 $i++;

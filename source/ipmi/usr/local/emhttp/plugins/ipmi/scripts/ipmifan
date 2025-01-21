@@ -146,7 +146,6 @@ if($daemon){
 # 01 - 64  = 1% - 100%
 #############################################
 
-
 #############################################
 # Supermicro X10/X11
 # ipmi-raw 00 30 70 66 01 00 64
@@ -444,37 +443,66 @@ while(TRUE){ while(TRUE){
                 $temphi  = (isset($fancfg["TEMPHI_$fan"])) ? intval($fancfg["TEMPHI_$fan"])  : 45;
                 $fanmin  = (isset($fancfg["FANMIN_$fan"])) ? intval($fancfg["FANMIN_$fan"])  : 16;
                 $fanmax  = (isset($fancfg["FANMAX_$fan"])) ? intval($fancfg["FANMAX_$fan"])  : $range;
+                $temploo  = (isset($fancfg["TEMPLOO_$fan"])) ? intval($fancfg["TEMPLOO_$fan"])  : 30;
+                $temphio  = (isset($fancfg["TEMPHIO_$fan"])) ? intval($fancfg["TEMPHIO_$fan"])  : 45;
+                $fanmino  = (isset($fancfg["FANMINO_$fan"])) ? intval($fancfg["FANMINO_$fan"])  : 16;
+                $fanmaxo  = (isset($fancfg["FANMAXO_$fan"])) ? intval($fancfg["FANMAXO_$fan"])  : $range;
                 $reading = floatval($sensors[$temp]['Reading']);
                 $name    = htmlspecialchars($sensors[$temp]['Name']);
+                $use_override = false;
                 if ($temp = "99" && $reading <= 0) {
                     if (isset($fancfg["TEMPHDD_$fan"]) &&  $fancfg["TEMPHDD_$fan"] != 0) {
                     $temp=    $fancfg["TEMPHDD_$fan"] ;
                     $reading = floatval($sensors[$temp]['Reading']);
                     $name    = "HDD Spundown using ".htmlspecialchars($sensors[$temp]['Name']);
+                    $use_override = true;
                     }  
                 }
-                if ($reading <= $templo){
-                    $pct = 0;
-                    $pwm = 1;
-                }elseif ($reading >= $temphi){
-                    $pct = 1;
-                    $pwm = $range;
-                }else{
-                    $pct = ($reading-$templo)/($temphi-$templo)*($fanmax-$fanmin)/$range + $fanmin/$range;
-                    $pwm = round(($pct)*($range/4))*4; //round
-                }
-                //impose fan lower limit
-                if ($pwm <= $fanmin){
-                    $pwm  = $fanmin;
-                    $pct  = $fanmin/$range;
-                }
+                if ($use_override) {
+                    if ($reading <= $temploo){
+                        $pct = 0;
+                        $pwm = 1;
+                    }elseif ($reading >= $temphio){
+                        $pct = 1;
+                        $pwm = $range;
+                    }else{
+                        $pct = ($reading-$temploo)/($temphio-$temploo)*($fanmaxo-$fanmino)/$range + $fanmino/$range;
+                        $pwm = round(($pct)*($range/4))*4; //round
+                    }
+                    //impose fan lower limit
+                    if ($pwm <= $fanmino){
+                        $pwm  = $fanmino;
+                        $pct  = $fanmino/$range;
+                    }
 
-                //impose fan upper limit
-                if ($pwm >= $fanmax){
-                    $pwm  = $fanmax;
-                    $pct  = $fanmax/$range;
-                }
+                    //impose fan upper limit
+                    if ($pwm >= $fanmaxo){
+                        $pwm  = $fanmaxo;
+                        $pct  = $fanmaxo/$range;
+                    }
+                } else {
+                    if ($reading <= $templo){
+                        $pct = 0;
+                        $pwm = 1;
+                    }elseif ($reading >= $temphi){
+                        $pct = 1;
+                        $pwm = $range;
+                    }else{
+                        $pct = ($reading-$templo)/($temphi-$templo)*($fanmax-$fanmin)/$range + $fanmin/$range;
+                        $pwm = round(($pct)*($range/4))*4; //round
+                    }
+                    //impose fan lower limit
+                    if ($pwm <= $fanmin){
+                        $pwm  = $fanmin;
+                        $pct  = $fanmin/$range;
+                    }
 
+                    //impose fan upper limit
+                    if ($pwm >= $fanmax){
+                        $pwm  = $fanmax;
+                        $pct  = $fanmax/$range;
+                    }
+                }
                 //convert pwm to hexadecimal
                 if($range == 255){
                     $pwm = dechex($pwm);
