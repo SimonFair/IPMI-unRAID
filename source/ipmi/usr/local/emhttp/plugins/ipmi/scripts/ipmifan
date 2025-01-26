@@ -513,7 +513,7 @@ while(TRUE){ while(TRUE){
 
                 //add fan, value, temp sensor name and reading
                 $pct  = str_pad(round($pct*100), 2, ' ', STR_PAD_LEFT);
-                if ($reading <= 0) $mytemp = "Spundown" ; else $mytemp = str_replace(" ","",my_temp($reading));
+                if ($reading <= 0) $mytemp = "Spundown" ; else $mytemp = str_replace([" ","&#8201;&#176;"],["",""],my_temp($reading));
                 $msg .= ", {$fan}({$pct}%):".str_replace('Temperature','Temp',$name)."($mytemp)";
 
            }else{
