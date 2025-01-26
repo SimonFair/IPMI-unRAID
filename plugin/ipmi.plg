@@ -18,7 +18,6 @@
 <CHANGES>
 ##&name;
 ###2025.01.26
-###2025.01.26
 - Fix HDD Exclude
 - Fix HTML code in fan log
 - Add Freeipmi package 1.6.15(7.0 and above)
