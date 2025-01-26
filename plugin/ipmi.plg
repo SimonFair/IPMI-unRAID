@@ -22,7 +22,7 @@
 - Fix HDD Exclude
 - Fix HTML code in fan log
 - Add Freeipmi package 1.6.15(7.0 and above)
-- Updated fan control page.
+- Updated fan control page. Thanks to spl147
 ###2025.01.21
 - PHP fixes
 - Add HDD override values.
