@@ -128,13 +128,14 @@ Cond="exec(\"grep -o '^OVERRIDE=.enable' /boot/config/plugins/ipmi/ipmi.cfg 2>/d
 </dl>
 
 <blockquote class="inline_help">
-    <p>List all fans available for control and corresponding temperature sensors. Current speed and temperature values are shown. Fans are controlled linearly based on the temperature range from High to Low.</p>
+    <p><b>List all fans available for control and corresponding temperature sensors. Current speed and temperature values are shown. Fans are controlled linearly based on the temperature range from High to Low.</b></p>
     <p>Temperature sensor:  Sensor to monitor when determining fan speed.</p>
     <p>High temperature threshold (°C):  Highest temperature in the linear range to determine fan speed. Above this temperature fan with run at full speed.</p>
     <p>Low temperature threshold (°C):  Lowest temperature in the linear range to determine fan speed.  Below this temperature the fan will turn off unless minimum is set. </p>
     <p>Fan speed maximum (1-100%):  Select the highest value a fan can reach. Useful to keep a fan below a certain speed.</p>
     <p>Fan speed minimum (1-100%):  Select the lowest value a fan can reach. Useful to prevent fan from stopping or going below a certain rpm.</p>
     <p>HDD spundown temperature sensor:  Sensor to monitor when determining fan speed while HDD(s) are spundown.</p>
+    <p><b>The following fields are only visible if a spundown temperature sensor is selected.</b></p>
     <p>High temperature threshold spundown (°C):  Highest temperature in the linear range to determine fan speed. Above this temperature fan with run at full speed.</p>
     <p>Low temperature threshold spundown (°C):  Lowest temperature in the linear range to determine fan speed.  Below this temperature the fan will turn off unless minimum is set. </p>
     <p>Fan speed maximum spundown (1-100%):  Select the highest value a fan can reach. Useful to keep a fan below a certain speed.</p>
