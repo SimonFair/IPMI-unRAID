@@ -78,8 +78,7 @@ function ipmi_sensors($ignore='') {
         return [];
 
     // add highest hard drive temp sensor and check if hdd is ignored
-    $all = true ;
-    $hdd = ((preg_match('/99/', $ignore)) && !$all) ? '' :
+    $hdd = (preg_match('/99/', $ignore)) ? '' :
         "99,HDD Temperature,Temperature,Nominal,$hdd_temp,C,N/A,N/A,N/A,45.00,50.00,N/A,Ok";
     if(!empty($hdd)){
         if(!empty($netopts))
