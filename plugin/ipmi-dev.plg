@@ -1,0 +1,608 @@
+<?xml version='1.0' standalone='yes'?>
+
+<!DOCTYPE PLUGIN [
+<!ENTITY name      "ipmi">
+<!ENTITY author    "SimonFair">
+<!ENTITY version   "2025.01.26c">
+<!ENTITY launch    "Settings/IPMI">
+<!ENTITY gitURL    "https://raw.githubusercontent.com/&author;/IPMI-unRAID/master">
+<!ENTITY pluginURL "&gitURL;/plugin/&name;.plg">
+<!ENTITY pkgURL    "&gitURL;/packages">
+<!ENTITY plgPATH   "/boot/config/plugins/&name;">
+<!ENTITY plgNAME   "&name;-&version;-x86_64-1">
+<!ENTITY emhttp    "/usr/local/emhttp/plugins/&name;">
+]>
+
+<PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;">
+
+<CHANGES>
+##&name;
+###2025.01.26c
+- Bold Line in helptext Thanks to spl147
+###2025.01.26b
+- Fix HDD Exclude
+- Fix HTML code in fan log
+- Updated fan control page. Thanks to spl147
+- Add New freeipmi package
+###2025.01.21
+- PHP fixes
+- Add HDD override values.
+###2023.12.12
+- Chg Dell model type to show name rather than part numner
+###2023.12.06
+- Add secondary Temp check if HDD is primary and disk have spundown.
+- Add JSON to config page.
+###2023.12.05
+- Fix X12 Fan
+- Add Spundown text and Fix Fan RPM unit.
+###2023.12.04
+- Add Conversion to between C and F if set in display settings.
+- Add Board and Model to Settings and Fan page.
+- Fix X12 model support.
+- Fix EP2C612WS check.
+###2023.12.02
+- Add FAN Control support for Dell systems.
+- Add Supermicro X12 options. Thanks to C4Wiz for PR.
+- Add ASRock EP2C612WS Support thanks to WillGunn for PR.
+- Set shift class in table sorter thanks to kcpants for PR.
+- Refactor code to allow easier models+boards to be added.
+###2023.10.06
+- Add IPMI LAN Version option. Default 1.5
+###2023.06.26
+- Add Dashboard minimise support on 6.12
+###2023.03.10
+- Fix Password Processing for Network Connections
+###2023.03.04a
+- Fix config and sensor config retreval.
+###2023.02.15a
+- 6.12 Fixes
+###2023.02.14
+- update PHP8
+- update 6.12 dashboard
+###2021.01.08
+- fix plugin package permissions
+###2020.09.17
+- update freeipmi to 1.6.6
+###2020.09.15
+- fix footer
+###2020.09.14
+- display temps in readings and dashboard based on global display units
+###2020.09.13
+- update dashboard
+###2020.08.24
+- fix hard drive spin down by using unraid hdd temps
+- update dashboard to match new ui
+- fix missing sensor icons
+- update to freeipmi 1.6.4
+###2019.02.08
+- add remaining fa icons
+###2019.01.25
+- remove all icons and convert to fa fonts
+- fix summarized notification misalignment caused by tablesorter css
+###2019.01.24
+- update settings icon to fa font
+###2018.12.31
+- add support for Supermicro boards with CPU_FAN and SYS_FAN fan names
+###2018.11.10
+- add fixed fan control page conditions
+- add more css and js autov thanks to ljm42
+###2018.11.08a
+- fix remove fan control page condition
+###2018.11.08
+- add fan control support for virtual machines
+###2018.11.04
+- fix full fans add delay to script start
+###2018.11.03
+- fix bmc cold reset
+- fix config editor not showing errors
+- update tablesorter to v2.31.0
+###2018.10.14
+- update fan control script
+- add css and js autov
+###2018.06.03
+- fix scaled fan control thanks to gmk2
+###2018.05.20a
+- move range from json to global var
+###2018.05.20
+- format min and max percentages to one decimal place
+- add support for Supermicro X9 boards
+- set Supermicro boards to full speed mode (other modes seem to interfere with script)
+###2017.12.14
+- add compatibility with System Temp plugin
+- add support for any sensor display in footer
+- reformat footer display
+###2017.11.29
+- fix fan control rc.local_shutdown command options
+###2017.11.26
+- fix plugin install services starting when disabled
+- fix bmc reset and editor save success/error return
+- add sensor cache flush to bmc reset
+###2017.11.24
+- fix footer refresh rate
+###2017.11.11
+- fix network settings not saving
+- change Dash page and Fan Control page condition check
+- misc minor bug fixes
+###2017.10.30
+- fix network password encoding on settings page
+- fix: remove info page error from freeipmi package
+###2017.10.27
+- upgrade freeipmi to 1.5.7
+- fix fan control full and auto speed for ASRock dual socket boards
+- add hard drive selection for display sensors and Readings
+- get hard drives for HDD Temperature from emhttp devices
+- if available get unassigned drive temps from UA plugin
+###2017.10.26
+- add support for ASRock dual socket boards
+- misc fixes and code cleanup
+###2017.10.23
+- add hard drive selection for fan control
+- add lock file to enable or disable fan control page
+- fix fan control start and stop
+- fix default settings buttons
+- add workaround to starting services during plugin install
+- add more towards dual socket Asrock, not there yet
+###2017.10.09a
+- update second pass for dual socket boards
+###2017.10.09
+- add support for dual socket to ipmi2json script only
+###2017.10.06
+- change fancontrol min and max to show percentage instead of 1 -64
+- update help
+###2017.10.02
+- fix css and stickyheaders for new themes
+- move cdnjs to local
+- properly fix dropdown checklist tab refresh/switch
+###2017.06.26
+- revert previous changes till for more testing
+###2017.06.25
+- change Temperature Polling Times.  You will need to change settings, save and restart fan control.
+- add fan max speed
+###2017.06.24
+- remove tablesorter package
+###2017.06.19
+- fix Supermicro auto fan setting
+- stopping fan control returns fans to original mode
+- update ipmifan auto and full speed functions
+###2017.06.18a
+- add zone fan control support for Supermicro X10 and X11 boards
+- add support for new 6.4 themes
+- combine Sensor Editor and Config Editor and move to Settings page
+- restructure Settings page vars and forms
+- fix incorrect colors vs readings when missing thresholds
+- change bmc reset from warm to cold reset
+- update codemirror cdn
+- update freeipmi to 1.5.5
+- remove board log file and switch to dmidecode for board info instead of ipmi-fru
+- misc fixes and code improvements
+###2017.01.27
+- update and harden code for security
+- update codemirror for sensor and config editor
+- add: search and replace functions for config editor
+###2016.10.22
+- fix: min/max version in plugin
+###2016.10.19
+- fix: min/max version in plugin
+- fix: cached board status set add unknown
+###2016.10.17
+- fix: board not recognized and fancontrol disbaled
+###2016.10.12
+- fix: load kernel driver
+###2016.10.10
+- fix: plugin file
+###2016.10.09
+- fix: quiet modprobe
+- update for min/max and 6.3
+###2016.10.07a
+- fix: add padding to single digit percentage for fan log
+###2016.10.07
+- fix: fan page showing config missing for fan when it's not
+###2016.10.06a
+- fix: array_key_error on fans page
+###2016.10.06
+- add: update to freeipmi-1.5.3
+- add: automatic system specific configuration of ipmi fans for ASRock boards
+- fix: move boards.json to board.json
+- fix: cache board type to speed up settings page
+- fix: minor fixes, cleanup and remove depreciated code
+- fix: css affecting dashboard
+- fix: unRaid 6.3 compatibility
+###2016.09.29
+- fix: remove quotes from OEM Reserved readings
+###2016.09.28a
+- add: show readings for OEM Reserved in dashboard
+- add: ability to select OEM Reserved to display in footer
+###2016.09.28
+- add: show readings for OEM Reserved e.g. Supermicro temp readings
+- fix: hard drives reading showing 0 when spun down
+###2016.09.20
+- fix: inaccurate error when running fancontrol while disabled
+###2016.09.16
+- update tablesorter to 2.27.6
+###2016.07.22
+- fix: fan control not setting fans to auto when stopped
+- fix: fan control not setting fan min (only setting a value of 1)
+- fix: fan log percentage 0% when fan min is used
+- thanks to piotrasd for the testing
+###2016.05.17
+- notice: with the latest update you will need to reconfigure your fan control settings
+- fix: convert fan control settings to name based instead of number based (you'll need to setup fancontrol again)
+- fix: workaround for dynamix plugin update api not refreshing after update (remove update message)
+- fix: workaround for dynamix drop down checklists bug (F5 on other tab breaks ddcl)
+- fix: refresh Settings tab on tab1 click for ddcl bug
+- fix: check for board manufacturer
+- add: remove auto board.json update and add manual Check for Updates button
+- add: update fan logging: add start/stop messages and fan speed changes are in the form Fan Name(%):Temp Sensor(°C)
+- add: ignored sensors to fan control page
+- add: ignored sensors and command line arguments to CL helper scripts: ipmisensors, ipmisel and ipmifru
+- add: Dashboard settings for all sensors, deselect all to disable Dashboard
+- remove: Dashboard switch and types
+###2016.05.16
+- add: Dashboard will show any sensor if state is not nominal
+- fix: Dashboard summary switch default to On
+- fix: no sensors if localhost and network enabled
+- fix: no sensors displayed if ignore is empty Thanks to ljm42
+- fix: remove depreciated network check in footer display Thanks ljm42
+###2016.05.15
+- fix: condense code, remove excess files
+- fix: readings page buttons alignment
+- fix: sensors refresh rate first time dash or readings page is loaded
+- add: update ipmi check method and network checks (move into fuctions)
+- add: color to sensor readings in footer based on sensor state
+- add: tablesorter reset for all tables (1st click is ascending, 2nd is descending and third 3rd is unsorted)
+- add: settings drop down check list for sensor select and ignore
+- add: settings drop down check list for Dashboard sensor type (uncheck all: hides IPMI Dashboard Summary)
+- add: Dashboard summary page and hide switch
+- fix: motherboard logos not showing
+###2016.05.10a
+- fix: local ipmi check Thanks to ljm42
+###2016.05.10
+- add: CL helper scripts ipmisensors and ipmisel that use network settings if network is enabled
+- add: motherboard logos
+- add: ability to use any fan or temp sensor in footer
+- add: settings and readings tabs to Settings and Tools menu
+- add: ipmi sensors configuration to readings page
+- add: ipmi system configuration editor to settings page
+- add: ability to edit, save and load on boot ipmi sensor configuration e.g. sensor thresholds
+- add: help button text
+- add: Dynamix plugin update API
+- add: ipmi fan control for ASRock boards only
+- (based on fans being named: CPU_FAN1, CPU_FAN2, REAR_FAN1, REAR_FAN2, FRNT_FAN1, FRNT_FAN2)
+- add: select fan control ip address
+- add: advanced view for fan control options
+- fix: show separate status on each settings page
+- add: highest array hard drive temp as a sensor
+- add: abbreviated units to readings, change units column to type column
+- fix: reduce footer footprint
+- fix: network options
+###2016.04.27
+- fix: network timeout
+###2016.03.27
+- fix: add check for valid date
+###2016.03.26
+- fix: change date format function
+###2016.03.25
+- fix: archived events page update on event delete
+- fix: archived events with same timestamp
+- fix: archived events tablesorter pager
+###2016.03.24
+- update for 6.2 to freeipmi 1.5.1
+- new installs on 6.2 will work fine
+- 6.2 users with previous install will need to reboot or install libgcrypt-1.6.5 (temporarily) to use freipmi 1.5.1
+- libgcrypt-1.6.5 is included with unRAID 6.2 and previous versions downgraded it to 1.5.5 to use freeipmi 1.4.11
+- http://ftp.slackware.com/pub/slackware/slackware64-current/slackware64/n/libgcrypt-1.6.5-x86_64-1.txz
+- fix: bug local ipmi timeout webgui to wait for ipmi (only affected systems without local ipmi)
+- changed backup events to archived events
+- add archived event page and switch
+###2016.03.14
+- update freeipmi 1.4.11 package remove init.d
+- fix virtual machines not auto starting due to /etc/init.d directory created by freeipmi package
+###2016.03.13
+- add test button for sending sample notification events
+- move ID column to advanced
+- fix temp units not showing in footer
+- add backup switch to backup events when clearing them
+###2016.03.12
+- converted to using freeipmi instead of ipmitool
+- add support for multiple ipmi hosts local, network or both together
+- add an extra fan display so you have 2 temp and 2 fan in footer
+- add different warning levels based on event state
+- fix race condition on reading of sensors and events
+- add highlights and filters to tables
+- add settings button to readings page and reading button to settings page
+- add polling time to event monitoring
+- code optimizations
+###2016.02.22
+- fix: advanced changed to fixed instead of toggle
+###2016.02.15a
+- fix: array combine error for sensors with non uniform data
+###2016.02.15
+- update tablesorter
+- add: fan control page and status
+- fan control Not functional yet
+- add: settings for temps and fan display
+- add: temp and fans readings to footer
+- move event daemon start and stop functions to rc scripts
+- remove daemon start and stop with array
+- move daemon start process to plugin install
+- move daemon stop process to rc.local_shutdown
+###2016.01.17
+- add tablesorter as a separate package
+- fix values outside of critical showing green
+- add icons instead of switches
+- minor code changes
+###2015.12.30
+- remove old plugin directory on install
+###2015.12.20
+- fixed "Waiting for events" triggering notification on system start
+- reorganize events page
+- add switchbuttons
+- move from UnRAID OS to System Information under Tools menu
+- add unRAID version check
+###2015.12.14
+- make sure and remove old plugin
+###2015.12.11
+- change repo
+- change install and remove method
+###2015.11.17
+- fix permissions for events
+###2015.11.10b
+- deleted wrong page file
+###2015.11.10
+- stop event monitoring on plugin removal
+###2015.11.09
+- minor bug fixes
+###2015.11.08
+- add settings page
+- add event notifications
+- add remote IPMI access
+###2015.08.15
+- update for unRAID 6.1-rc+ only
+###2015.05.07a
+- fix bug
+###2015.05.07
+- initial unRAID 6 release.
+</CHANGES>
+
+<!--
+This plugin uses freeipmi to display sensor readings
+-->
+<FILE Name="&plgPATH;/freeipmi-1.6.15-x86_64-1sf.txz" Min="7.0" Run="/sbin/upgradepkg --install-new">
+<URL>&pkgURL;/freeipmi-1.6.15-x86_64-1sf.txz</URL>
+<MD5>225a7f30922d3ae6a718d663ff828670</MD5>
+</FILE>
+
+<FILE Name="&plgPATH;/freeipmi-1.6.6-x86_64-1.txz" Min="6.8" Max="6.12.99" Run="/sbin/upgradepkg --install-new">
+<URL>&pkgURL;/freeipmi-1.6.6-x86_64-1.txz</URL>
+<MD5>604ecc5e4756c0347fb4a1d9be4c4000</MD5>
+</FILE>
+
+<FILE Name="&plgPATH;/freeipmi-1.5.7-x86_64-2.txz" Min="6.2" Max="6.7.99" Run="/sbin/upgradepkg --install-new">
+<URL>&pkgURL;/freeipmi-1.5.7-x86_64-2.txz</URL>
+<MD5>66a3efd19bd7cc53ef07c14a77431fe7</MD5>
+</FILE>
+
+<FILE Name="&plgPATH;/freeipmi-1.4.11-x86_64-3.txz" Min="6.1" Max="6.1.99" Run="/sbin/upgradepkg --install-new">
+<URL>&pkgURL;/freeipmi-1.4.11-x86_64-3.txz</URL>
+<MD5>6c7839886f7c7b0cc4947aaf6199d60e</MD5>
+</FILE>
+
+<!--
+The 'plugin' config file.
+-->
+<FILE Name="&plgPATH;/&name;.cfg">
+<INLINE>
+<![CDATA[
+IPMISELD="disable"
+IPMIPOLL="180"
+NETWORK="disable"
+LOCAL="disable"
+IPADDR=""
+USER=""
+PASSWORD=""
+DISP_SENSOR1="0"
+DISP_SENSOR2="0"
+DISP_SENSOR1="0"
+DISP_SENSOR2="0"
+LOADCFG="disable"
+IGNORE=""
+DIGNORE=""
+DASH="enable"
+DEVIGNORE=""
+DEVS="enable"
+OVERRIDE="disable"
+OBOARD="Supermicro"
+OCOUNT="0"
+OMODEL="9"
+]]>
+</INLINE>
+</FILE>
+
+<!--
+The 'plugin' fan config file.
+-->
+<FILE Name="&plgPATH;/fan.cfg">
+<INLINE>
+<![CDATA[
+FANCONTROL="disable"
+FANPOLL="6"
+FANIP=""
+HDDPOLL="18"
+HDDIGNORE=""
+HARDDRIVES="enable"
+]]>
+</INLINE>
+</FILE>
+
+<!--
+The 'plugin' package file.
+-->
+<FILE Name="&plgPATH;/&plgNAME;.txz">
+<URL>&gitURL;/archive/&plgNAME;.txz</URL>
+</FILE>
+
+<!--
+The 'plugin' package MD5 hash.
+-->
+<FILE Name="&plgPATH;/&plgNAME;.md5">
+<URL>&gitURL;/archive/&plgNAME;.md5</URL>
+</FILE>
+
+<!-- WORKAROUND -->
+<FILE Name="/tmp/start_&name;" Mode="0770">
+<INLINE>
+#!/bin/bash
+CONFIG=&plgPATH;/&name;.cfg
+
+# read our configuration
+if [ -e "$CONFIG" ]; then
+    source "$CONFIG"
+fi
+
+# checking ipmi board support
+/usr/bin/php &emhttp;/scripts/ipmicheck
+sleep 1
+
+# stopping ipmi event monitor
+/etc/rc.d/rc.ipmiseld stop
+sleep 1
+
+# stopping ipmi system log tail
+/etc/rc.d/rc.ipmitail stop
+sleep 1
+
+# start ipmi event monitoring if enabled
+if [ "$IPMISELD" == "enable" ]; then
+    # starting ipmi event monitor
+    /etc/rc.d/rc.ipmiseld start
+    sleep 1
+
+    # starting ipmi system log tail
+    /etc/rc.d/rc.ipmitail start
+    sleep 1
+fi
+
+CONFIG=&plgPATH;/fan.cfg
+
+# read our configuration
+if [ -e "$CONFIG" ]; then
+    source "$CONFIG"
+fi
+
+# stopping ipmi fan control
+/usr/sbin/ipmifan --quit
+sleep 1
+
+# start ipmi fan control if enabled
+if [ "$FANCONTROL" == "enable" ]; then
+    /usr/sbin/ipmifan --daemon
+    sleep 1
+fi
+
+# checking ipmi sensors configuration
+if [ "$LOADCFG" == "enable" ]; then
+    /etc/rc.d/rc.ipmicfg commit
+fi
+</INLINE>
+</FILE>
+
+<!--
+The 'install' script.
+-->
+<FILE Run="/bin/bash" Method="install">
+<INLINE>
+#Verify Unraid Version
+source /etc/unraid-version
+VER=${version:0:3}
+
+if [[ $VER == 6.0 ]]; then
+    echo "Unraid version 6.1 or higher is required"
+    exit 1
+fi
+
+# Verify and install plugin package
+sum1=$(/usr/bin/md5sum &plgPATH;/&plgNAME;.txz)
+sum2=$(/usr/bin/cat &plgPATH;/&plgNAME;.md5)
+if [ "${sum1:0:32}" != "${sum2:0:32}" ]; then
+    echo "Wrong 'plugin' package md5 hash."
+    rm &plgPATH;/&plgNAME;.txz \
+         &plgPATH;/&plgNAME;.md5
+    exit 1
+else
+
+    upgradepkg --install-new &plgPATH;/&plgNAME;.txz
+
+    if [ -e "/boot/config/plugins/ipmi/boards.json" ]; then
+         mv &plgPATH;/boards.json &plgPATH;/board.json
+    fi
+
+    # Load impi drivers
+    echo "loading ipmi drivers..."
+    for module in ipmi_msghandler ipmi_devintf ipmi_si; do
+        modprobe -q $module
+    done
+
+    # Start scripts if enabled
+    echo "starting ipmi services..."
+    at -M -f /tmp/start_&name; now 2>/dev/null
+
+    sleep 1
+
+    rm -f /tmp/start_&name;
+
+    # Cleaning old source files
+    find &plgPATH;/ -type f -iname "&name;*.txz" ! -iname "*&version;*" -delete
+    find &plgPATH;/ -type f -iname "&name;*.md5" ! -iname "*&version;*" -delete
+
+echo ""
+echo "-----------------------------------------------------------"
+echo " &name; has been installed."
+echo " Copyright 2015-2021, &author;"
+echo " Version: &version;"
+echo "-----------------------------------------------------------"
+echo ""
+
+fi
+</INLINE>
+</FILE>
+
+<!--
+The 'remove' script.
+-->
+<FILE Run="/bin/bash" Method="remove">
+<INLINE>
+#stop daemon
+echo "stopping ipmi services..."
+/etc/rc.d/rc.ipmiseld stop
+sleep 1
+/etc/rc.d/rc.ipmitail stop
+sleep 1
+echo "stopping ipmi fan control..."
+sleep 1
+/usr/sbin/ipmifan --quit
+sleep 1
+
+rm -rf &plgPATH;/libgcrypt*.txz
+
+removepkg &plgPATH;/*.txz
+rm -rf &emhttp;
+rm -f &plgPATH;/*.txz \
+  &plgPATH;/*.md5
+
+
+echo "unloading ipmi drivers..."
+for module in ipmi_msghandler ipmi_devintf ipmi_si; do
+    modprobe -r $module
+done
+
+echo ""
+echo "-----------------------------------------------------------"
+echo " &name; has been removed."
+echo " Copyright 2015-2021, &author;"
+echo " Version: &version;"
+echo "-----------------------------------------------------------"
+echo ""
+</INLINE>
+</FILE>
+
+</PLUGIN>
