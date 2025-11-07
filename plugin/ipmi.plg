@@ -3,7 +3,7 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ipmi">
 <!ENTITY author    "SimonFair">
-<!ENTITY version   "2025.02.09">
+<!ENTITY version   "2025.11.07">
 <!ENTITY launch    "Settings/IPMI">
 <!ENTITY gitURL    "https://raw.githubusercontent.com/&author;/IPMI-unRAID/master">
 <!ENTITY pluginURL "&gitURL;/plugin/&name;.plg">
@@ -17,6 +17,8 @@
 
 <CHANGES>
 ##&name;
+###2025.11.07
+- Updates for 7.2
 ###2025.02.09
 - Fix freeipmi package
 - Update icon on footer to be HDD if HDD temp.
@@ -31,7 +33,7 @@
 - PHP fixes
 - Add HDD override values.
 ###2023.12.12
-- Chg Dell model type to show name rather than part numner
+- Chg Dell model type to show name rather than part number
 ###2023.12.06
 - Add secondary Temp check if HDD is primary and disk have spundown.
 - Add JSON to config page.
