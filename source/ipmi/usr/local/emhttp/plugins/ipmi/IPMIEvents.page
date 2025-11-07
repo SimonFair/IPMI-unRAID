@@ -59,13 +59,13 @@ $(function(){
     })
     .change(function () {
         $.cookie('ipmi_event_archive', $('#event-arch')[0].checked ? 1 : 0, { expires: 3650 });
-        $('#tab3').parent().toggle();
+        if ($('.tabs-container').length) $('#tab3').toggle(); else $('#tab3').parent().toggle(); 
     });
 
     if($.cookie('ipmi_event_archive') == 1)
-        $('#tab3').parent().show();
+        if ($('.tabs-container').length) $('#tab3').show(); else $('#tab3').parent().show()
     else
-        $('#tab3').parent().hide();
+        if ($('.tabs-container').length) $('#tab3').hide(); else $('#tab3').parent().hide();
 
     $('#tblEvent').tablesorter({
         sortList: [[2,1]],

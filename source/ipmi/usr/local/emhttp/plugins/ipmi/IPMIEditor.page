@@ -60,9 +60,9 @@ Markdown="false"
 
 <dl>
     <dt><input type="button" value="Revert" id="btnRevert" title="reset the stored IPMI config file to the existing BMC config" /></dt>
-    <dd><input type="button" value="Save" id="btnSubmit" title="save IPMI configuration changes to the BMC" />
+    <dd><span><input type="button" value="Save" id="btnSubmit" title="save IPMI configuration changes to the BMC" />
     <input type="button" value="Cancel" id="btnCancel" />
-    <span><i class="fa fa-warning icon warning"></i> Edit Carefully!</span>
+    <i class="fa fa-warning icon warning"></i> Edit Carefully!</span>
     </dd>
 </form>
 </dl>

@@ -5,6 +5,8 @@ Tag="cog"
 ---
 <? require_once '/usr/local/emhttp/plugins/ipmi/include/ipmi_settings.php';?>
 
+<?$version_check=version_compare(parse_ini_file('/etc/unraid-version')['version'],'7.1.99', '>') ;?>
+
 <link type="text/css" rel="stylesheet" href="<?=autov('/webGui/styles/jquery.switchbutton.css');?>">
 <link type="text/css" rel="stylesheet" href="<?=autov('/plugins/ipmi/css/ipmi.css');?>">
 
@@ -108,14 +110,20 @@ Enable Virtual Machine Override:
 > Selecting an incorrect model will not work.
 > Settings and commands are specific to each model
 
+<?php if (!$version_check) : ?>
 <input class="ipmi-run" type="button" id="ipmi-default" value="Default"><input type="button" value="Reset BMC" id="bmc-reset" title="do a cold reset of the BMC">
 : <input id="btnApply" type="submit" value="Apply"><input type="button" value="Done" onClick="done()">
+<?php endif; ?>
+<?php if ($version_check) : ?>
+<input class="ipmi-run" type="button" id="ipmi-default" value="Default"><input type="button" value="Reset BMC" id="bmc-reset" title="do a cold reset of the BMC"><span>
+: <span><input id="btnApply" type="submit" value="Apply"><input type="button" value="Done" onClick="done()"></span>
+<?php endif; ?>
 
 </form>
 
 <div id="title" >
     <span class="left"><i class="icon fa fa-comment"></i> Event Notification</span>
-    <span class="status" id="notify-status">Event Notification: <?=$seld_status;?> </span>
+  <dl> <span class="status" id="notify-status">Event Notification: <?=$seld_status;?> </span></dl>
 </div>
 
 <form markdown="1" id="settings-seld" name="seld_settings" method="POST" action="/update.php" target="progressFrame">
@@ -147,7 +155,7 @@ Event Polling Time:
 &nbsp;
 
 <input class="seld-run" type="button" id="seld-default" value="Default">
-: <input class="seld-run" id="btnSELD" type="submit" value="Apply"><input type="button" value="Done" onClick="done()">
+: <span><input class="seld-run" id="btnSELD" type="submit" value="Apply"><input type="button" value="Done" onClick="done()"></span>
 </form>
 
 > Default button resets form.
@@ -210,7 +218,7 @@ Available Hard Drives:
 &nbsp;
 
 <input type="button" id="ignore-default" value="Default">
-: <input type="submit" value="Apply"><input type="button" value="Done" onClick="done()">
+: <span><input type="submit" value="Apply"><input type="button" value="Done" onClick="done()"><span>
 </form>
 
 <div id="title"><span class="left"><i class="icon fa fa-sticky-note"></i> Footer Settings</span></div>
@@ -255,7 +263,7 @@ Sensor #4:
 &nbsp;
 
 <input type="button" id="footer-default" value="Default">
-: <input type="submit" value="Apply"><input type="button" value="Done" onClick="done()">
+: <span><input type="submit" value="Apply"><input type="button" value="Done" onClick="done()"><span>
 </form>
 
 <script src="<?=autov('/plugins/ipmi/js/jquery.mask.min.js');?>"></script>
@@ -264,8 +272,17 @@ Sensor #4:
 <script>
 $(function(){
     // append readings tab
+    <?php if (!$version_check) : ?>
     $('.tabs')
         .append('<div class="tab"><input type="radio" name="tabs2" id="tab5"><label for="tab5"><i class="icon fa fa-heartbeat"></i>Readings</label></div>');
+    <?php endif; ?>
+    <?php if ($version_check) : ?>
+    if ($('.tabs-container').length) {
+        $('.tabs-container').append('<button role="tab" name="tabs2" id="tab5" aria-controls="tab5-panel" tabindex="-1" aria-selected="false"><span><i class="fa fa-heartbeat title"></i>Readings</span></button>');
+    } else {
+        $('.tabs').append('<div class="tab"><input type="radio" name="tabs2" id="tab5"><label for="tab5"><i class="icon fa fa-heartbeat"></i>Readings</label></div>');
+    }
+    <?php endif; ?>
 
     // dynamix plugin update api
     <?if (function_exists('plugin_update_available') && $version = plugin_update_available('ipmi')):?>
