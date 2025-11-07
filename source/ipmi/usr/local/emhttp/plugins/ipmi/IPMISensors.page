@@ -2,7 +2,7 @@ Menu="IPMITools:1"
 Title="Sensors"
 Icon="heartbeat"
 Tag="heartbeat"
-Markdown="false"
+Markdown="true"
 ---
 <link type="text/css" rel="stylesheet" href="<?=autov('/plugins/ipmi/css/ipmi.css');?>">
 <link type="text/css" rel="stylesheet" href="<?=autov('/plugins/ipmi/css/tablesorter.css');?>">
@@ -17,7 +17,7 @@ table.tablesorter tbody tr:nth-child(even) {
 }
 </style>
 
-<div>
+<div><div>
     <span id="adv-switch" class="status"><input type='checkbox' id='advancedview'></span>
     <table class="tablesorter shift hover-highlight sensors" id="tblSensor">
         <thead>
@@ -44,12 +44,12 @@ table.tablesorter tbody tr:nth-child(even) {
     </blockquote>
     <dl>
         <dt>&nbsp;</dt>
-        <dd><button type="button" class="reset-sensors" title="reset table sorting filters">Reset Filters</button><button type="button" onClick="done();">Done</button></dd>
+        <dd><span class="buttons-spaced"><button type="button" class="reset-sensors" title="reset table sorting filters">Reset Filters</button><button type="button" onClick="done();">Done</button></dd></span>
     </dl>
     <blockquote class="inline_help">
         <p>Reset Filters button resets table filters. Settings button navigates to the IPMI settings page.  Edit button allows you to edit your IPMI thresholds and sensor events configuration.  Done button navigates to the Tools menu. </p>
     </blockquote>
-</div>
+</div></div>
 
 <script src="<?=autov('/plugins/ipmi/js/jquery.tablesorter.combined.min.js');?>"></script>
 <script src="<?=autov('/plugins/ipmi/js/jquery.tablesorter.pager.min.js');?>"></script>
@@ -57,8 +57,12 @@ table.tablesorter tbody tr:nth-child(even) {
 
 <script>
 $(function(){
-    $('.tabs')
-        .append('<div class="tab"><input type="radio" name="tabs2" id="tab4"><label for="tab4"><i class="icon fa fa-cog"></i>Settings</label></div>');
+        
+    if ($('.tabs-container').length) {
+        $('.tabs-container').append('<button role="tab" name="tabs2" id="tab4" aria-controls="tab4-panel" tabindex="-1" aria-selected="false"><span><i class="icon fa fa-cog title"></i>SettingsReadings</span></button>');
+    } else {
+        $('.tabs').append('<div class="tab"><input type="radio" name="tabs2" id="tab4"><label for="tab4"><i class="icon fa fa-cog"></i>Settings</label></div>');
+    }
 
     <?if (function_exists('plugin_update_available') && $version = plugin_update_available('ipmi')):?>
         showNotice('IPMI <?=$version?> available. <a>Update</a>','ipmi');

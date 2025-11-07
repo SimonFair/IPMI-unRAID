@@ -9,7 +9,7 @@ Cond="exec(\"grep -o '^OVERRIDE=.enable' /boot/config/plugins/ipmi/ipmi.cfg 2>/d
     <span class="left"><i class="icon fa fa-thermometer"></i> Fan Control </span>
     <span class="status" style="margin-top: 50px;margin-left: -200px;">
     <img class="board-img" src=""></span>
-    <span class="status" id="fanctrl-status">Fan Control: <?=$fanctrl_status;?></span>
+    <dl><span class="status" id="fanctrl-status">Fan Control: <?=$fanctrl_status;?></span><dl>
 </div>
 
 <?if ($board_status !== false):?>
@@ -103,7 +103,7 @@ Cond="exec(\"grep -o '^OVERRIDE=.enable' /boot/config/plugins/ipmi/ipmi.cfg 2>/d
         <input id="btnConfig" class="fanctrl-run" type="button" value="Configure" title="tests your fans and determines their location for fan control">
     <?endif;?>
     </dt>
-    <dd><input id="btnFANApply" type="submit" value="Apply"><input type="button" value="Done" onClick="done()"></dd>
+    <dd><span><input id="btnFANApply" type="submit" value="Apply"><input type="button" value="Done" onClick="done()"><span></dd>
 </dl>
 <blockquote class="inline_help">
     <p>'Default' loads the default values for fan control.</p>
@@ -115,9 +115,9 @@ Cond="exec(\"grep -o '^OVERRIDE=.enable' /boot/config/plugins/ipmi/ipmi.cfg 2>/d
 <!-- Fan Settings -->
 
 <div id="title"><span class="left"><i class="icon fa fa-cog"></i> Fan Settings </span></div>
-
+<dl>
     <span class="status" style="margin-top: 0px;"><input type="checkbox" id="advancedview"></span>
-
+</dl>
 <form name="fanctrl_options" method="POST" action="/update.php" target="progressFrame">
 <input type="hidden" name="#file" value="ipmi/fan.cfg" />
 
@@ -170,7 +170,7 @@ Cond="exec(\"grep -o '^OVERRIDE=.enable' /boot/config/plugins/ipmi/ipmi.cfg 2>/d
 
 <dl>
     <dt>&nbsp;</dt>
-    <dd><input type="submit" value="Apply"><input type="button" value="Done" onClick="done()"></dd>
+    <dd><span><input type="submit" value="Apply"><input type="button" value="Done" onClick="done()"></dd></span>
 </dl>
 
 </form>
