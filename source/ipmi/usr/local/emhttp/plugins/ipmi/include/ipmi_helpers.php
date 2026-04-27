@@ -375,12 +375,19 @@ function get_fanctrl_options(){
                 echo '<input type="hidden" name="FAN_',$name,'" value="',$id,'"/>';
 
                 // fan name: reading => temp name: reading
-                echo '<dl><dt>',$display,' (',floatval($fan['Reading']),' ',$fan['Units'],'):</dt><span class="fanctrl-basic">';
+                echo '<dl><dt>',$display,' (',floatval($fan['Reading']),' ',$fan['Units'],'):</dt><dd><span class="fanctrl-basic">';
                 if (!$fanenabled) {
                     echo 'Disabled';
+                } else {
+                    if ($temp['Name']){
+                        echo $temp['Name'],' ('.my_temp(floatval($temp['Reading'])),' ','), ',
+                        $fancfg[$templo],'-',$fancfg[$temphi],'&deg;, ',number_format((intval(intval($fancfg[$fanmin])/$range*1000)/10),1),'-',number_format((intval(intval($fancfg[$fanmax])/$range*1000)/10),1),'%';
+                    }else{
+                        echo 'Auto';
+                    }
                 }
 
-                echo '</span><span class="fanctrl-settings">';
+                echo '</span><span class="fanctrl-settings" style="display:none;">';
                 if ($fanenabled) {
                     if ($temp['Name']){
                         echo $temp['Name'],' ('.my_temp(floatval($temp['Reading'])),' ','), ',
@@ -399,7 +406,7 @@ function get_fanctrl_options(){
                 } else {
                     echo '&nbsp;';
                 }
-                echo '</span>';
+                echo '</span></dd>';
 
                 // check if board.json exists then if fan name is in board.json
                 $noconfig = '<font class="red"><b><i> (fan is not configured!)</i></b></font>';
@@ -415,11 +422,11 @@ function get_fanctrl_options(){
                     echo $noconfig;
                 }
 
-                echo '</dd></dl>';
+                echo '</dl>';
 
                 // enable or disable this fan in fan control
                 echo '<dl class="fanctrl-settings">',
-                '<dt><dl><dd>Use in fan control:</dd></dl></dt><dd>',
+                '<dt>Use in fan control:</dt><dd>',
                 '<select name="',$fanenable,'" class="fanctrl-enable" data-fan="',$name,'">',
                 '<option value="1"', ($fanenabled ? ' selected' : ''), '>Enabled</option>',
                 '<option value="0"', (!$fanenabled ? ' selected' : ''), '>Disabled</option>',
@@ -427,7 +434,7 @@ function get_fanctrl_options(){
 
                 // temperature sensor
                 echo '<dl class="fanctrl-settings ',$fanconfigclass,'"',$fanhide,'>',
-                '<dt><dl><dd>Temperature sensor:</dd></dl></dt><dd>',
+                '<dt>Temperature sensor:</dt><dd>',
                 '<select name="',$tempid,'" class="fanctrl-temp fanctrl-settings">',
                 '<option value="0">Auto</option>',
                 get_temp_options($fancfg[$tempid]),
@@ -437,64 +444,64 @@ function get_fanctrl_options(){
 
                 // high temperature threshold
                                 echo '<dl class="fanctrl-settings ',$fanconfigclass,'"',$fanhide,'>',
-                '<dt><dl><dd>High temperature threshold (&deg;'.$display_unit.'):</dd></dl></dt>',
+                '<dt>High temperature threshold (&deg;'.$display_unit.'):</dt>',
                 '<dd><select name="',$temphi,'" class="',$tempid,' fanctrl-settings">',
                 get_temp_range('HI', $fancfg[$temphi],$display_unit),
                 '</select></dd></dl>';
 
                 // low temperature threshold
                                 echo '<dl class="fanctrl-settings ',$fanconfigclass,'"',$fanhide,'>',
-                '<dt><dl><dd>Low temperature threshold (&deg;'.$display_unit.'):</dd></dl></dt>',
+                '<dt>Low temperature threshold (&deg;'.$display_unit.'):</dt>',
                 '<dd><select name="',$templo,'" class="',$tempid,' fanctrl-settings">',
                 get_temp_range('LO', $fancfg[$templo],$display_unit),
                 '</select></dd></dl>';
 
                 // fan control maximum speed
                                 echo '<dl class="fanctrl-settings ',$fanconfigclass,'"',$fanhide,'>',
-                '<dt><dl><dd>Fan speed maximum (%):</dd></dl></dt><dd>',
+                '<dt>Fan speed maximum (%):</dt><dd>',
                 '<select name="',$fanmax,'" class="',$tempid,' fanctrl-settings">',
                 get_minmax_options('HI', $fancfg[$fanmax]),
                 '</select></dd></dl>';
 
                 // fan control minimum speed
                                 echo '<dl class="fanctrl-settings ',$fanconfigclass,'"',$fanhide,'>',
-                '<dt><dl><dd>Fan speed minimum (%):</dd></dl></dt><dd>',
+                '<dt>Fan speed minimum (%):</dt><dd>',
                 '<select name="',$fanmin,'" class="',$tempid,' fanctrl-settings">',
                 get_minmax_options('LO', $fancfg[$fanmin]),
                 '</select></dd></dl>&nbsp;';
        
                 // temperature sensor Spundown
-                                echo '<dl class="fanctrl-settings ',$fanconfigclass,'"',$fanhide,'>',
-                '<dt><dl><dd>HDD Spundown Temperature sensor:</dd></dl></dt><dd>',
+                                                                echo '<dl class="fanctrl-settings ',$fanconfigclass,'"',$fanhide,'>',
+                                '<dt>HDD Spundown Temperature sensor:</dt><dd>',
                 '<select', $disabled, ' name="', $temphdd, '" class="fanctrl-temp fanctrl-settings">',
                 '<option value="0">None</option>',
                 get_temp_options($fancfg[$temphdd]),
                 '</select></dd></dl>';
 
                 // high temperature threshold Spundown
-                                                                echo '<dl class="fanctrl-settings ',$fanconfigclass,' ',$spindownconfigclass,'"',$spindownhide,'>',
-                '<dt><dl><dd>High temperature threshold Spundown (&deg;', $display_unit, '):</dd></dl></dt>',
+                                                                                                                                echo '<dl class="fanctrl-settings ',$fanconfigclass,' ',$spindownconfigclass,'"',$spindownhide,'>',
+                                '<dt>High temperature threshold Spundown (&deg;', $display_unit, '):</dt>',
                 '<dd><select name="', $temphio, '" class="', $tempid, ' fanctrl-settings">',
                 get_temp_range('HI', $fancfg[$temphio], $display_unit),
                 '</select></dd></dl>';
 
                 // low temperature threshold Spundown
-                                                         echo '<dl class="fanctrl-settings ',$fanconfigclass,' ',$spindownconfigclass,'"',$spindownhide,'>',
-               '<dt><dl><dd>Low temperature threshold Spundown (&deg;', $display_unit, '):</dd></dl></dt>',
+                                                                                                                 echo '<dl class="fanctrl-settings ',$fanconfigclass,' ',$spindownconfigclass,'"',$spindownhide,'>',
+                             '<dt>Low temperature threshold Spundown (&deg;', $display_unit, '):</dt>',
                '<dd><select name="', $temploo, '" class="', $tempid, ' fanctrl-settings">',
                get_temp_range('LO', $fancfg[$temploo], $display_unit),
                '</select></dd></dl>';
 
                // fan control maximum speed Spundown
-                                                         echo '<dl class="fanctrl-settings ',$fanconfigclass,' ',$spindownconfigclass,'"',$spindownhide,'>',
-               '<dt><dl><dd>Fan speed maximum Spundown (%):</dd></dl></dt><dd>',
+                                                                                                                 echo '<dl class="fanctrl-settings ',$fanconfigclass,' ',$spindownconfigclass,'"',$spindownhide,'>',
+                             '<dt>Fan speed maximum Spundown (%):</dt><dd>',
                '<select name="', $fanmaxo, '" class="', $tempid, ' fanctrl-settings">',
                get_minmax_options('HI', $fancfg[$fanmaxo]),
                '</select></dd></dl>';
 
               // fan control minimum speed Spundown
-                                                        echo '<dl class="fanctrl-settings ',$fanconfigclass,' ',$spindownconfigclass,'"',$spindownhide,'>',
-              '<dt><dl><dd>Fan speed minimum Spundown (%):</dd></dl></dt><dd>',
+                                                                                                                echo '<dl class="fanctrl-settings ',$fanconfigclass,' ',$spindownconfigclass,'"',$spindownhide,'>',
+                            '<dt>Fan speed minimum Spundown (%):</dt><dd>',
               '<select name="', $fanmino, '" class="', $tempid, ' fanctrl-settings">',
               get_minmax_options('LO', $fancfg[$fanmino]),
             '</select></dd></dl>&nbsp;';

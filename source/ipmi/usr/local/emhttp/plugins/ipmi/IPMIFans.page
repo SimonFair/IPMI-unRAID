@@ -200,6 +200,20 @@ if(is_file($log)){
 </table>
 <?endif;?>
 
+<style>
+.fanctrl-settings { display: none; }
+</style>
+
+<script>
+// Hide all fanctrl-settings immediately to prevent flash before jQuery runs
+document.addEventListener('DOMContentLoaded', function() {
+    var elements = document.querySelectorAll('.fanctrl-settings');
+    for (var i = 0; i < elements.length; i++) {
+        elements[i].style.display = 'none';
+    }
+});
+</script>
+
 <script>
 $(function(){
     <?if ($board_status !== false):?>
@@ -239,7 +253,8 @@ $(function(){
         var spindownSelector = "select[name='TEMPHDD_" + fanSuffix + "']";
         var detailClass = '.fan-spindown-' + fanSuffix;
         var spindownValue = parseInt($(spindownSelector).val() || '0', 10);
-        var showDetails = ($(primarySelector).val() === '99') && (spindownValue > 0) && !$(spindownSelector).prop('disabled');
+        var showAdvanced = ($.cookie('fanctrl_view_mode') == 'advanced');
+        var showDetails = showAdvanced && ($(primarySelector).val() === '99') && (spindownValue > 0) && !$(spindownSelector).prop('disabled');
         $(detailClass).toggle(showDetails);
     }
 
@@ -278,14 +293,11 @@ $(function(){
 
     $('.fanctrl-enable')
         .each(function() {
-            var fanClass = '.fan-config-' + $(this).data('fan');
-            $(fanClass).toggle($(this).val() !== '0');
             $(this).closest('.fan-block').attr('data-enabled', ($(this).val() === '0') ? '0' : '1');
         })
         .on('change', function() {
-            var fanClass = '.fan-config-' + $(this).data('fan');
-            $(fanClass).toggle($(this).val() !== '0');
             $(this).closest('.fan-block').attr('data-enabled', ($(this).val() === '0') ? '0' : '1');
+            syncFanConfigVisibility();
             sortFanBlocks();
         });
 
@@ -349,6 +361,15 @@ function sortFanBlocks() {
     });
 }
 
+function syncFanConfigVisibility() {
+    var showAdvanced = ($.cookie('fanctrl_view_mode') == 'advanced');
+    $('.fanctrl-enable').each(function() {
+        var fanClass = '.fan-config-' + $(this).data('fan');
+        var fanEnabled = ($(this).val() !== '0');
+        $(fanClass).toggle(showAdvanced && fanEnabled);
+    });
+}
+
 function checkFANCTRL() {
     if ($('#FANCONTROL')[0].selectedIndex < 1 ) {
         $('#FANCMD').val('/usr/local/emhttp/plugins/ipmi/scripts/fanctrl_stop');
@@ -381,6 +402,7 @@ function toggleFanCTRL() {
         $('.fanctrl-basic').show();
         $('.fanctrl-settings').hide();
     }
+    syncFanConfigVisibility();
 }
 <?endif;?>
 </script>
