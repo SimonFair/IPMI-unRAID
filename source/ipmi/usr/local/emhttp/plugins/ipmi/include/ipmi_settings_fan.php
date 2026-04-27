@@ -115,6 +115,26 @@ switch($board) {
       ]
     ]
 ]; */
+  case 'Giga':
+  $board_file_status = true;
+    $range = 255;
+    $board_json = [ 'Giga' =>
+            [ 'raw'    => '00 2e 10 0a 3c 00 40 01', # + value 0-255 for speed and ID A0-A6
+              'auto'   => '00 2e 10 0a 3c 00 40 00 00 00',
+              'manual' => '00 2e 10 0a 3c 00 40 00 00 00',
+              'full'   => '00 2e 10 0a 3c 00 40 00 00 00',
+              'fans'   => [
+                'CPU0_FAN' => 'A0',
+                'SYS_FAN1' => 'A1',
+                'SYS_FAN2' => 'A2',
+                'SYS_FAN3' => 'A3',
+                'SYS_FAN4' => 'A4',
+                'SYS_FAN5' => 'A5',
+                'SYS_FAN6' => 'A6',
+              ]
+        ]
+    ];
+    break;
 }
 
 // fan network options base64_decode(
