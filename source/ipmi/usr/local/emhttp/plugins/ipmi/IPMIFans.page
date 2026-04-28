@@ -2,7 +2,7 @@ Menu="IPMI:2"
 Title="Fan Control"
 Tag="thermometer"
 Markdown="false"
-Cond="exec(\"grep -o '^OVERRIDE=.enable' /boot/config/plugins/ipmi/ipmi.cfg 2>/dev/null\") || array_key_exists(trim(shell_exec(\"dmidecode -t 2 | grep 'Manufacturer' | awk -F 'r:' '{print $2}' | awk '{print $1}'\")), ['ASRock'=>'','ASRockRack'=>'','Dell'=>'','Supermicro'=>''])"
+Cond="exec(\"grep -o '^OVERRIDE=.enable' /boot/config/plugins/ipmi/ipmi.cfg 2>/dev/null\") || array_key_exists(trim(shell_exec(\"dmidecode -t 2 | grep 'Manufacturer' | awk -F 'r:' '{print $2}' | awk '{print $1}'\")), ['ASRock'=>'','ASRockRack'=>'','Dell'=>'','Supermicro'=>'','Giga'=>''])"
 ---
 
 <div id="title" style="margin-top: -22px;">
@@ -200,6 +200,20 @@ if(is_file($log)){
 </table>
 <?endif;?>
 
+<style>
+.fanctrl-settings { display: none; }
+</style>
+
+<script>
+// Hide all fanctrl-settings immediately to prevent flash before jQuery runs
+document.addEventListener('DOMContentLoaded', function() {
+    var elements = document.querySelectorAll('.fanctrl-settings');
+    for (var i = 0; i < elements.length; i++) {
+        elements[i].style.display = 'none';
+    }
+});
+</script>
+
 <script>
 $(function(){
     <?if ($board_status !== false):?>
@@ -228,18 +242,66 @@ $(function(){
         toggleFanCTRL();
     });
 
+    // Set a deterministic initial state to avoid settings text flashing on first paint.
+    $('.fanctrl-settings').hide();
+    $('.fanctrl-basic').show();
     toggleFanCTRL();
 
     // toggle auto disables settings
+    function syncSpindownDetailState(fanSuffix) {
+        var primarySelector = "select[name='TEMP_" + fanSuffix + "']";
+        var spindownSelector = "select[name='TEMPHDD_" + fanSuffix + "']";
+        var detailClass = '.fan-spindown-' + fanSuffix;
+        var spindownValue = parseInt($(spindownSelector).val() || '0', 10);
+        var showAdvanced = ($.cookie('fanctrl_view_mode') == 'advanced');
+        var showDetails = showAdvanced && ($(primarySelector).val() === '99') && (spindownValue > 0) && !$(spindownSelector).prop('disabled');
+        $(detailClass).toggle(showDetails);
+    }
+
+    function syncHddSpindownSensorState(tempSelect) {
+        var tempName = $(tempSelect).attr('name') || '';
+        if (tempName.indexOf('TEMP_') !== 0 || tempName.indexOf('TEMPHDD_') === 0) {
+            return;
+        }
+
+        var fanSuffix = tempName.substring(5);
+        var spindownSelector = "select[name='TEMPHDD_" + fanSuffix + "']";
+        var enableSpindownSensor = ($(tempSelect).val() === '99');
+        $(spindownSelector).prop('disabled', !enableSpindownSensor);
+        syncSpindownDetailState(fanSuffix);
+    }
+
     $('.fanctrl-temp')
         .each(function() {
             var FanName = '.' + $(this).attr('name');
             $(FanName).prop('disabled', ($(this)[0].selectedIndex == 0));
+            syncHddSpindownSensorState(this);
+            var tempName = $(this).attr('name') || '';
+            if (tempName.indexOf('TEMPHDD_') === 0) {
+                syncSpindownDetailState(tempName.substring(8));
+            }
         })
         .on('change', function() {
             var FanName = '.' + $(this).attr('name');
             $(FanName).prop('disabled', ($(this)[0].selectedIndex == 0));
+            syncHddSpindownSensorState(this);
+            var tempName = $(this).attr('name') || '';
+            if (tempName.indexOf('TEMPHDD_') === 0) {
+                syncSpindownDetailState(tempName.substring(8));
+            }
         });
+
+    $('.fanctrl-enable')
+        .each(function() {
+            $(this).closest('.fan-block').attr('data-enabled', ($(this).val() === '0') ? '0' : '1');
+        })
+        .on('change', function() {
+            $(this).closest('.fan-block').attr('data-enabled', ($(this).val() === '0') ? '0' : '1');
+            syncFanConfigVisibility();
+            sortFanBlocks();
+        });
+
+    sortFanBlocks();
 
     $('#btnConfig').click(function() {
                 openBox('/plugins/ipmi/scripts/ipmi2json', 'IPMI Fan Config', 600, 900, true);
@@ -286,6 +348,28 @@ function initDriveDropdown(remove) {
     DDCheckList('#select-drives','#HDDIGNORE');
 }
 
+function sortFanBlocks() {
+    var fanBlocks = $('.fan-block').get();
+    fanBlocks.sort(function(a, b) {
+        var aEnabled = parseInt($(a).attr('data-enabled') || '1', 10);
+        var bEnabled = parseInt($(b).attr('data-enabled') || '1', 10);
+        return bEnabled - aEnabled;
+    });
+
+    $.each(fanBlocks, function(_, block) {
+        $(block).appendTo('#fanctrl-options');
+    });
+}
+
+function syncFanConfigVisibility() {
+    var showAdvanced = ($.cookie('fanctrl_view_mode') == 'advanced');
+    $('.fanctrl-enable').each(function() {
+        var fanClass = '.fan-config-' + $(this).data('fan');
+        var fanEnabled = ($(this).val() !== '0');
+        $(fanClass).toggle(showAdvanced && fanEnabled);
+    });
+}
+
 function checkFANCTRL() {
     if ($('#FANCONTROL')[0].selectedIndex < 1 ) {
         $('#FANCMD').val('/usr/local/emhttp/plugins/ipmi/scripts/fanctrl_stop');
@@ -312,12 +396,13 @@ function checkBoard() {
 
 function toggleFanCTRL() {
     if ($.cookie('fanctrl_view_mode') == 'advanced') {
-        $('.fanctrl-settings').show('slow');
-        $('.fanctrl-basic').hide('slow');
+        $('.fanctrl-settings').show();
+        $('.fanctrl-basic').hide();
     }else{
-        $('.fanctrl-basic').show('slow');
-        $('.fanctrl-settings').hide('slow');
+        $('.fanctrl-basic').show();
+        $('.fanctrl-settings').hide();
     }
+    syncFanConfigVisibility();
 }
 <?endif;?>
 </script>

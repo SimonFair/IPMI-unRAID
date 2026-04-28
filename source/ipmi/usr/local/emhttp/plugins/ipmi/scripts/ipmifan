@@ -27,6 +27,7 @@ Usage: $prog [options]
 
   -a, --auto       set fans to auto
       --full       set fans to full speed
+    -n, --dryrun     output checks only; do not send fan commands
   -q, --quiet      suppress all messages
       --debug      turn on debugging
       --daemon     run in the background
@@ -37,10 +38,11 @@ Usage: $prog [options]
 
 EOF;
 
-$shortopts = 'adfq';
+$shortopts = 'adfqn';
 $longopts = [
     'auto',
     'daemon',
+    'dryrun',
     'debug',
     'full',
     'help',
@@ -62,6 +64,7 @@ if (array_key_exists('version', $args)) {
 
 $arga   = (array_key_exists('a', $args) || array_key_exists('auto', $args));
 $argf   = (array_key_exists('full', $args));
+$dryrun = (array_key_exists('n', $args) || array_key_exists('dryrun', $args));
 $argq   = (array_key_exists('q', $args) || array_key_exists('quiet', $args));
 $debug  = (array_key_exists('debug', $args));
 $daemon = (array_key_exists('d', $args) || array_key_exists('daemon', $args));
@@ -117,7 +120,19 @@ if (!$board_file_status) {
 }
 
 if($daemon){
-    exec("php $service 1>/dev/null ".($debug ? "":"2>&1 ")."&");
+    $daemon_args = [];
+    if ($dryrun)
+        $daemon_args[] = '--dryrun';
+    if ($debug)
+        $daemon_args[] = '--debug';
+    if ($argq)
+        $daemon_args[] = '--quiet';
+
+    $daemon_cmd = 'php '.escapeshellarg($service);
+    if (!empty($daemon_args))
+        $daemon_cmd .= ' '.implode(' ', $daemon_args);
+
+    exec($daemon_cmd.' 1>/dev/null '.($debug ? '' : '2>&1 ').'&');
     syslog(LOG_INFO, "process started. To terminate it, type: $prog --quit");
     exit(0);
 }
@@ -185,6 +200,32 @@ if($daemon){
 # 01 - 64  = 1% - 100%
 #############################################
 
+
+#############################################
+# Gigabyte Model for SW34-SP0
+# raw    => '00 2e 10 0a 3c 00 40 01 CC BB', # + value 0-255 for speed and ID A0-A6
+# auto   => '00 2e 10 0a 3c 00 40 00 00 00', 
+# full   => '00 2e 10 0a 3c 00 40 01 FF FF',
+#
+# BB
+# A0 - CPU_FAN
+# A1 - SYS_FAN1
+# A2 - SYS_FAN2
+# A3 - SYS_FAN3
+# A4 - SYS_FAN4
+# A5 - SYS_FAN5
+# A6 - SYS_FAN6
+# FF - all fans 
+#
+# CC
+# 00 to FF - Set Speed (0-255)
+#
+# Fan duty is a value from 1-255, where 1 is 0% and 255 is 100%. The command sets manual mode inline.
+# No way to set individual fans to auto, but setting all fans to auto will override manual mode and set all fans to auto.
+#############################################
+
+
+
 ##############################
 ###### FUNCTION SECTION ######
 ##############################
@@ -215,7 +256,7 @@ function debug($m){
 
 /* auto fan */
 function autofan() {
-    global $board_json, $board, $board_model, $cmd_count, $fanopts;
+    global $board_json, $board, $board_model, $cmd_count, $fanopts, $dryrun;
     fanlog('Setting fans to auto');
     $cmd = '';
     switch($board) {
@@ -242,13 +283,23 @@ function autofan() {
             $auto = $board_json[$board]['auto'];
             $cmd   = "ipmi-raw $auto $fanopts 2>&1 >/dev/null &";
             break;
+        case "Giga":
+            //if board is Giga
+            $auto = $board_json[$board]['auto'];
+            $cmd  = "ipmi-raw $auto $fanopts 2>&1 >/dev/null &";
+            break;
     }
-    shell_exec($cmd);
+    if ($dryrun) {
+        fanlog('[DRYRUN] Skipping autofan command');
+        debug('[DRYRUN] autofan cmd: '.$cmd);
+    } else {
+        shell_exec($cmd);
+    }
 }
 
 /* manual fan */
 function manualfan() {
-    global $board_json, $board, $board_model, $cmd_count, $fanopts;
+    global $board_json, $board, $board_model, $cmd_count, $fanopts, $dryrun;
     fanlog('Setting fans to manual');
     $cmd = '';
     switch($board) {
@@ -276,13 +327,18 @@ function manualfan() {
             $cmd   = "ipmi-raw $manual $fanopts 2>&1 >/dev/null &";
             break;
     }
-    shell_exec($cmd);
+    if ($dryrun) {
+        fanlog('[DRYRUN] Skipping manualfan command');
+        debug('[DRYRUN] manualfan cmd: '.$cmd);
+    } else {
+        shell_exec($cmd);
+    }
     sleep(10) ;
 }
 
 /* full speed fan */
 function fullfan() {
-    global $board_json, $board, $board_model, $cmd_count, $fanopts;
+    global $board_json, $board, $board_model, $cmd_count, $fanopts, $dryrun;
     fanlog('Setting fans to full speed');
     switch($board) {
         case "ASRock":
@@ -306,9 +362,19 @@ function fullfan() {
             $raw    = $board_json[$board]['raw'];
             $full = $board_json[$board]['full'];
             $cmd   = "ipmi-raw $full $fanopts 2>&1 >/dev/null &";
-            break;  
+            break;
+        case "Giga":
+            //if board is Giga
+            $full = $board_json[$board]['full'];
+            $cmd  = "ipmi-raw $full $fanopts 2>&1 >/dev/null &";
+            break;
     }
-    echo shell_exec($cmd);
+    if ($dryrun) {
+        fanlog('[DRYRUN] Skipping fullfan command');
+        debug('[DRYRUN] fullfan cmd: '.$cmd);
+    } else {
+        echo shell_exec($cmd);
+    }
     sleep(10);
 }
 
@@ -396,16 +462,16 @@ $fan_count    = $fanpoll * 10;
 $hdd_count    = $hddpoll * 10;
 $curent_hex   = '';
 $current_hex2 = '';
+$current_pwm_giga = [];
 
 fanlog('Starting Fan Control');
 fanlog("Board: $board Board Model: $board_model");
+if($dryrun){
+    fanlog('Dry run mode enabled: checks will run, fan commands will not execute');
+}
 
 if($board == 'Supermicro'){
     fanlog("SM Board selection: $smboard_model");
-    fullfan();
-}
-if($board == 'Dell'){
-    manualfan();
 }
 
 while(TRUE){ while(TRUE){
@@ -436,7 +502,8 @@ while(TRUE){ while(TRUE){
 
         foreach($fans as $fan => $value){
 
-            $temp = isset($fancfg["TEMP_$fan"]) ? $fancfg["TEMP_$fan"] : '';
+            $fan_enabled = !isset($fancfg["FANENABLE_$fan"]) || strval($fancfg["FANENABLE_$fan"]) !== '0';
+            $temp = ($fan_enabled && isset($fancfg["TEMP_$fan"])) ? $fancfg["TEMP_$fan"] : '';
          #   echo "temp:".$temp;
             if(!empty($temp)) {
                 $templo  = (isset($fancfg["TEMPLO_$fan"])) ? intval($fancfg["TEMPLO_$fan"])  : 30;
@@ -450,7 +517,7 @@ while(TRUE){ while(TRUE){
                 $reading = floatval($sensors[$temp]['Reading']);
                 $name    = htmlspecialchars($sensors[$temp]['Name']);
                 $use_override = false;
-                if ($temp = "99" && $reading <= 0) {
+                if ($temp == "99" && $reading <= 0) {
                     if (isset($fancfg["TEMPHDD_$fan"]) &&  $fancfg["TEMPHDD_$fan"] != 0) {
                     $temp=    $fancfg["TEMPHDD_$fan"] ;
                     $reading = floatval($sensors[$temp]['Reading']);
@@ -516,7 +583,10 @@ while(TRUE){ while(TRUE){
                 if ($reading <= 0) $mytemp = "Spundown" ; else $mytemp = str_replace([" ","&#8201;&#176;"],["",""],my_temp($reading));
                 $msg .= ", {$fan}({$pct}%):".str_replace('Temperature','Temp',$name)."($mytemp)";
 
-           }else{
+         }else{
+             if (!$fan_enabled) {
+                $msg .= ", {$fan}(Disabled)";
+             }
                 $pwm ='00';
            }
 
@@ -574,6 +644,18 @@ while(TRUE){ while(TRUE){
                     $exec = true;
                 }
                 break;
+            case "Giga":
+                // each Giga fan is controlled independently and command sets manual mode inline
+                $giga_key = $board0.':'.$value;
+                if(!isset($current_pwm_giga[$giga_key]))
+                    $current_pwm_giga[$giga_key] = '';
+
+                if($current_pwm_giga[$giga_key] !== $pwm && $pwm !== '00'){
+                    $cmd .= "ipmi-raw $raw $pwm $value $fanopts 2>&1; ";
+                    $current_pwm_giga[$giga_key] = $pwm;
+                    $exec = true;
+                }
+                break;
             }
             $fan_count++;
         }
@@ -605,8 +687,12 @@ while(TRUE){ while(TRUE){
             break;
         }
 
-        // execute command if exec set
-        if($exec){
+        // execute command if exec set, or log checks in dryrun mode
+        if($dryrun){
+            if($cmd)
+                fanlog('[DRYRUN] '.$cmd);
+            fanlog('[DRYRUN] '.$msg);
+        } elseif($exec){
             shell_exec($cmd);
             #fanlog($cmd);
             if($debug)
