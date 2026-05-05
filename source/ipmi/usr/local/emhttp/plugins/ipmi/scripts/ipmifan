@@ -472,6 +472,17 @@ if($dryrun){
 
 if($board == 'Supermicro'){
     fanlog("SM Board selection: $smboard_model");
+    if($dryrun)
+        fanlog('[DRYRUN] Skipping startup fullfan for Supermicro');
+    else
+        fullfan();
+}
+
+if($board == 'Dell'){
+    if($dryrun)
+        fanlog('[DRYRUN] Skipping startup manualfan for Dell');
+    else
+        manualfan();
 }
 
 while(TRUE){ while(TRUE){
