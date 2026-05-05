@@ -59,6 +59,23 @@ function get_highest_temp(){
     return $return;
 }
 
+/* get current power from ipmi-dcmi */
+function ipmi_current_power() {
+    global $netopts;
+    $cmd = "/usr/sbin/ipmi-dcmi --get-system-power-statistics $netopts 2>/dev/null";
+    $return_var=null;
+    exec($cmd, $output, $return_var);
+    if ($return_var)
+        return "N/A";
+    foreach($output as $line){
+        // one $line contains "Current Power                        : 119 Watts"
+        if (preg_match("/Current Power\s*:\s*(\d+)\s*Watts/", $line, $matches)){
+            return $matches[1];
+        }
+    }
+    return "N/A";
+}
+
 /* get an array of all sensors and their values */
 function ipmi_sensors($ignore='') {
     global $ipmi, $netopts, $hdd_temp;
@@ -84,6 +101,18 @@ function ipmi_sensors($ignore='') {
         if(!empty($netopts))
             $hdd = '127.0.0.1:'.$hdd;
         $output[] = $hdd;
+    }
+    // add power output from ipmi-dcmi if not ignored or already exists
+    // for IDs see https://forums.unraid.net/topic/135823-plugin-ipmi-for-611/page/15/#comment-1376117
+    if (!preg_match("/56/", $ignore) and !preg_grep("/56/", $output)){
+        $curr_pwr = ipmi_current_power();
+        $pwr = (preg_match('/56/', $ignore)) ? '' :
+            "56,PSU1 Power In,Power Supply,Nominal,$curr_pwr,W,N/A,N/A,N/A,N/A,N/A,N/A,OK";
+        if(!empty($pwr)){
+            if(!empty($netopts))
+                $pwr = '127.0.0.1:'.$pwr;
+            $output[] = $pwr;
+        }
     }
     // test sensor
     // $output[] = "98,CPU Temp,OEM Reserved,Nominal,N/A,N/A,N/A,N/A,N/A,45.00,50.00,N/A,'Medium'";
