@@ -121,7 +121,6 @@ switch($board) {
     $board_json = [ 'Giga' =>
             [ 'raw'    => '00 2e 10 0a 3c 00 40 01', # + value 0-255 for speed and ID A0-A6
               'auto'   => '00 2e 10 0a 3c 00 40 00 00 00',
-              'manual' => '00 2e 10 0a 3c 00 40 00 00 00',
               'full'   => '00 2e 10 0a 3c 00 40 00 00 00',
               'fans'   => [
                 'CPU0_FAN' => 'A0',
