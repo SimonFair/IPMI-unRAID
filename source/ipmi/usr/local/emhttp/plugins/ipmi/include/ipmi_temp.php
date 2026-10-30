@@ -6,7 +6,7 @@ function format_ipmi_temp($reading, $unit, $dot) {
   return (($reading != 0) ? ($unit==='F' ? round(9/5*$reading+32) : str_replace('.',$dot,$reading))."</font><font><small>&deg;$unit</small>" : '##');
 }
 
-$disp_sensors = [$disp_sensor1, $disp_sensor2, $disp_sensor3, $disp_sensor4];
+$disp_sensors = [$disp_sensor1, $disp_sensor2, $disp_sensor3, $disp_sensor4, $disp_sensor5, $disp_sensor6, $disp_sensor7, $disp_sensor8];
 
 if (!empty($disp_sensors)){
     $readings = ipmi_sensors($ignore);

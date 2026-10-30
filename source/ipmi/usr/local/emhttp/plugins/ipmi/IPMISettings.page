@@ -260,6 +260,38 @@ Sensor #4:
 
 > Forth sensor to monitor and display in footer of webGui.
 
+Sensor #5:
+: <select id="DISP_SENSOR5" name="DISP_SENSOR5" class="display">
+        <option value=''>None</option>
+        <?=ipmi_get_options($disp_sensor5);?>
+    </select>
+
+> Fifth sensor to monitor and display in footer of webGui.
+
+Sensor #6:
+: <select id="DISP_SENSOR6" name="DISP_SENSOR6" class="display">
+        <option value=''>None</option>
+        <?=ipmi_get_options($disp_sensor6);?>
+    </select>
+
+> Sixth sensor to monitor and display in footer of webGui.
+
+Sensor #7:
+: <select id="DISP_SENSOR7" name="DISP_SENSOR7" class="display">
+        <option value=''>None</option>
+        <?=ipmi_get_options($disp_sensor7);?>
+    </select>
+
+> Seventh sensor to monitor and display in footer of webGui.
+
+Sensor #8:
+: <select id="DISP_SENSOR8" name="DISP_SENSOR8" class="display">
+        <option value=''>None</option>
+        <?=ipmi_get_options($disp_sensor8);?>
+    </select>
+
+> Eighth sensor to monitor and display in footer of webGui.
+
 &nbsp;
 
 <input type="button" id="footer-default" value="Default">
@@ -402,6 +434,10 @@ function resetFootDATA() {
     $('#DISP_SENSOR2')[0].selectedIndex = 0;
     $('#DISP_SENSOR3')[0].selectedIndex = 0;
     $('#DISP_SENSOR4')[0].selectedIndex = 0;
+    $('#DISP_SENSOR5')[0].selectedIndex = 0;
+    $('#DISP_SENSOR6')[0].selectedIndex = 0;
+    $('#DISP_SENSOR7')[0].selectedIndex = 0;
+    $('#DISP_SENSOR8')[0].selectedIndex = 0;
     $('#settings-footer').submit();
 }
 
