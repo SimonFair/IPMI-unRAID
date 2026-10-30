@@ -33,7 +33,7 @@ if (!empty($disp_sensors)){
                 if ($disp_reading > $UpperC && $UpperC != 0)
                     $Color = 'red';
                 if ($disp_name == "HDD Temperature") $icon = "fa-hdd-o"; else $icon = "fa-thermometer";
-                $displays[] = "<span title='$disp_name ($disp_id)'><i class='icon fa $icon'></i><font color='$Color'>".
+                $displays[] = "<span title='$disp_name ($disp_id)'><i class='icon fa $icon' style='color:$Color'></i><font color='$Color'>".
                     format_ipmi_temp(floatval($disp_reading), htmlspecialchars($_GET['unit']), htmlspecialchars($_GET['dot'])).'</font></span>';
             }elseif($readings[$disp_sensor]['Type'] === 'Fan'){
                 // if Fan RPMs are less than lower non-critical
